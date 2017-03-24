@@ -17,10 +17,10 @@ OPTIONS
 
 BEFORE & AFTER
 --------------
-*BEFORE*
+**BEFORE**
 ![Before ansiart2utf8 processing][imgBefore]
 
-*AFTER*
+**AFTER**
 ![After ansiart2utf8 processing][imgAfter]
 
 [imgBefore]: ansiart2utf8-before.gif "ANSI in Terminal Before Processing"
