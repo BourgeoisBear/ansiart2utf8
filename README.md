@@ -14,6 +14,36 @@ OPTIONS
   -w uint
     	LINE WIDTH (default 80)
 ```
+
+BEFORE & AFTER
+--------------
+*BEFORE*
+![Before ansiart2utf8 processing][imgBefore]
+
+*AFTER*
+![After ansiart2utf8 processing][imgAfter]
+
+[imgBefore]: ansiart2utf8-before.gif "ANSI in Terminal Before Processing"
+[imgAfter]: ansiart2utf8-after.gif "ANSI in Terminal After Processing"
+
+NOTES
+-----
+To build:
+
+1. Install the latest Go compiler from https://golang.org/dl/
+2. Change to project folder: `cd ./ansiart2utf8`
+3. Build executable: `go build ./ansiart2utf8.go`
+
+To see the result, make sure your terminal font provides glyphs for the old CP437 box drawing characters.
+
+Here are a few fonts that will do:
+
+- [DejaVu Sans Mono](https://github.com/dejavu-fonts/dejavu-fonts)
+- [Envy Code R](https://damieng.com/blog/2008/05/26/envy-code-r-preview-7-coding-font-released)
+- [Courier New](https://www.microsoft.com/typography/fonts/family.aspx?FID=10)
+- [Consolas](https://en.wikipedia.org/wiki/Consolas)
+
+
 RESOURCES
 ---------
 - [PabloDraw](http://picoe.ca/products/pablodraw/), an ANSI drawing program for Windows
