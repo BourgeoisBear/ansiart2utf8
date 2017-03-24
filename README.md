@@ -34,9 +34,7 @@ To build:
 2. Change to project folder: `cd ./ansiart2utf8`
 3. Build executable: `go build ./ansiart2utf8.go`
 
-To see the result, make sure your terminal font provides glyphs for the old CP437 box drawing characters.
-
-Here are a few fonts that will do:
+**To see the result, make sure that your terminal font provides glyphs for the old CP437 box drawing characters.**<br/>Here are a few fonts that will do:
 
 - [DejaVu Sans Mono](https://github.com/dejavu-fonts/dejavu-fonts)
 - [Envy Code R](https://damieng.com/blog/2008/05/26/envy-code-r-preview-7-coding-font-released)
