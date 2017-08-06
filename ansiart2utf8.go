@@ -29,8 +29,8 @@ import (
    "strings"
    "io/ioutil"
    "bufio"
-   "regexp"
-   "strconv"
+
+   "ansiart2utf8/ansi"
 )
 
 const (
@@ -114,8 +114,9 @@ OPTIONS
    }
 
    // COMMAND PARAMETERS
-   puiWidth := flag.Uint(  "w",     80,    "LINE WIDTH")
+   puiWidth := flag.Uint(  "w",      80,   "LINE WIDTH")
    pszInput := flag.String("f",     "-",   "INPUT FILENAME, OR \"-\" FOR STDIN")
+   pbDebug  := flag.Bool(  "d",   false,   "DEBUG MODE: LINE NUMBERING + PIPE @ \\n")
 
    flag.Parse()
 
@@ -136,41 +137,24 @@ OPTIONS
    }
 
    bsInput, oErr := ioutil.ReadAll(pFile)
+   fnErrExit(oErr)
 
    var (
       bEsc        bool     = false
-      lenLine     uint     = 0
-      szTempEsc   string   = ""
-
-      bsSGR       []string
    )
 
-   bsSGR = make([]string, 0)
+   bsSGR := ansi.SGR_Reset()
+   pGrid := ansi.GridNew( ansi.GridDim(*puiWidth) )
 
    // BUFFER OUTPUT
    pWriter := bufio.NewWriter(os.Stdout)
 
-   // ESC[nC MOTION
-   oREXP, oErr := regexp.Compile("\x1B\\[([[:digit:]]+)C")
-   fnErrExit(oErr)
-
-   // VALID RESTORABLE ESC RESET
-   oREXP_Reset, oErr := regexp.Compile("\x1B\\[[0]+m")
-   fnErrExit(oErr)
-
-   // EXPAND "CURSOR FORWARD" ESC CODES TO ACTUAL SPACES
-   szFiltered := oREXP.ReplaceAllStringFunc(string(bsInput), func(match string) string {
-
-      szTmp := oREXP.FindStringSubmatch(match)
-
-      nSpaces, oErr := strconv.ParseUint(szTmp[1], 10, 32)
-      fnErrExitEx(oErr, "FAILED TO PARSE MOTION ESCAPE CODE")
-
-      return strings.Repeat(" ", int(nSpaces))
-   })
+   curCode  := ansi.ECode{}
+   curPos   := ansi.NewPos()
+   curSaved := ansi.NewPos()
 
    // ITERATE BYTES IN INPUT
-   for _, chr := range []byte(szFiltered) {
+   for _, chr := range bsInput {
 
       // DROP \r
       if chr == CHR_CR {
@@ -181,35 +165,105 @@ OPTIONS
       } else if chr == CHR_ESCAPE {
 
          bEsc = true
-         szTempEsc = string(chr)
+         curCode.Reset()
 
       // HANDLE ESCAPE CODE SEQUENCE
       } else if bEsc {
 
+         // TODO: TEST ./textfiles/fruit.ans
+         // TODO: SGR MERGE-MAP
+         // TODO: COLORS!
+         // TODO: COLUMN TRUNCATION
+
          // ESCAPE CODE TERMINATING CHARS:
          // EXIT ESCAPE CODE FSM SUCCESSFULLY ON TERMINATING 'm' CHARACTER
-         if strings.IndexByte("mhlJK", chr) != -1 {
+         if strings.IndexByte(ansi.CodeTerminators(), chr) != -1 {
 
             bEsc = false
-            szTempEsc += string(chr)
+            curCode.Code = rune(chr)
 
-            // ONLY RESTORE SGR ESCAPE CODES
-            if chr == 'm' {
+            if curCode.Validate() {
 
-               // RESET BGR STACK ON RESET ESCAPE CODE
-               if oREXP_Reset.MatchString(szTempEsc) {
+               // ONLY RESTORE SGR ESCAPE CODES
+               switch( curCode.Code ) {
 
-                  bsSGR = make([]string, 0)
-                  szTempEsc = SZ_ESC_RESET // RESET TO WHITE-ON-BLACK + ^[[0m
+               case 'm':
 
-               // OTHERWISE, PUSH TO BGR STACK
-               } else {
+                  // RESET SGR STACK ON RESET ESCAPE CODE
+                  if curCode.Params == "[0" {
 
-                  bsSGR = append(bsSGR, szTempEsc)
+                     // WRITE EXPLICIT RESET SINCE TYPICAL [0m USES
+                     // COLORS FROM USER SETTINGS INSTEAD OF BLACK-ON-WHITE
+                     bsSGR = ansi.SGR_Reset()
+
+                  // OTHERWISE, PUSH TO SGR STACK
+                  } else {
+
+                     oErr = bsSGR.Merge(curCode.SubParams)
+
+                     if *pbDebug && (oErr != nil) {
+                        fmt.Println(oErr)
+                     }
+                  }
+
+                  // TODO: SKIP CHAR
+                  pGrid.Put(curPos, nil, bsSGR)
+
+               // UP
+               case 'A':
+
+                  pGrid.IncClamp(&curPos, 0, -int(curCode.SubParams[0]))
+
+               // DOWN
+               case 'B':
+
+                  pGrid.IncClamp(&curPos, 0, int(curCode.SubParams[0]))
+
+               // FORWARD
+               case 'C':
+
+                  pGrid.IncClamp(&curPos, int(curCode.SubParams[0]), 0)
+
+               // BACK
+               case 'D':
+
+                  pGrid.IncClamp(&curPos, -int(curCode.SubParams[0]), 0)
+
+               // TO X,Y
+               case 'H', 'f':
+
+                  curPos.Y = ansi.GridDim(curCode.SubParams[0])
+                  curPos.X = ansi.GridDim(curCode.SubParams[1])
+
+               // SAVE CURSOR POS
+               case 's':
+
+                  curSaved = curPos
+
+               // RESTORE CURSOR POS
+               case 'u':
+
+                  curPos = curSaved
+
+               // TODO: J, K
+
+               default:
+
+                  if *pbDebug {
+                     fmt.Println("UNHANDLED CODE: ", curCode.Debug())
+                  }
+
+                  continue
+               }
+
+               // fmt.Println("SUCCESS: ", curCode.Debug())
+
+            } else {
+
+               if *pbDebug {
+                  fmt.Println("INVALID CODE: ", curCode.Debug())
                }
             }
-
-            pWriter.WriteString(szTempEsc)
 
             continue
 
@@ -218,52 +272,35 @@ OPTIONS
 
             continue
 
-         // EXIT ESCAPE CODE FSM ON INVALID CHAR
-         } else if strings.IndexByte("0123456789[]noNOPX?^_c;\\", chr) == -1 {
-
-            bEsc = false
-            szTempEsc = ""
-
          // WRITE OUT COMPONENT OF ESCAPE SEQUENCE
          } else {
 
-            szTempEsc += string(chr)
+            curCode.Params += string(chr)
          }
       }
 
       // HANDLE WRITABLE CHARACTERS OUTSIDE OF ESCAPE MODE
       if !bEsc {
 
-         // WRAP TO NEXT LINE ON \n, OR WHEN SPECIFIED LINE WIDTH IS MET
-         if (chr == CHR_LF) || (lenLine == *puiWidth) {
+         if (chr == CHR_LF) {
 
-            // RESET LINE, INSERT LF, RESTORE SGR (COLOR/FONT) SETTINGS
-            pWriter.WriteString(SZ_ESC_RESET)
-            pWriter.WriteByte(CHR_LF)
+            // TODO: REVISIT WHAT TO PUT IN /N PLACE
+            pGrid.Put(curPos, nil, bsSGR)
+            curPos.Y += 1
+            curPos.X = 1
 
-            for _, szEsc := range bsSGR {
+         } else {
 
-               pWriter.WriteString(szEsc)
-            }
-
-            lenLine = 0
-
-            if chr == CHR_LF {
-
-               continue
-            }
+            pGrid.Put(curPos, &Array437[chr], bsSGR)
+            pGrid.Inc(&curPos)
          }
-
-         lenLine += 1
-
-         // CHARACTER TRANSLATION
-         pWriter.WriteRune(Array437[chr])
       }
    }
 
+   pGrid.Print(pWriter, *pbDebug)
+
    pWriter.WriteString(SZ_ESC_FINAL_RESET)
    pWriter.WriteByte(CHR_LF)
-
    pWriter.Flush()
 
    os.Exit(0)
