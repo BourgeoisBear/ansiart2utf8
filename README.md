@@ -1,7 +1,5 @@
 ansiart2utf8
 ============
-VERSION 0.1 BETA
-----------------
 Processes legacy BBS-style ANSI art (ACiDDraw, PabloDraw, etc.) to UTF-8.<br/>
 Escape codes and line endings are processed for terminal friendliness.
 
@@ -54,9 +52,11 @@ RESOURCES
   https://en.wikipedia.org/wiki/ANSI_escape_code<br/>
   https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
 
-http://artscene.textfiles.com/ansi/
-https://www.ansilove.org/bbs.html
-http://bbs.ninja/
-http://ascii-table.com/ansi-escape-sequences.php
-http://bluesock.org/~willg/dev/ansi.html
-https://github.com/k0kubun/go-ansi
+MEDIA
+-----
+- http://artscene.textfiles.com/ansi/
+- https://www.ansilove.org/bbs.html
+- http://bbs.ninja/
+- http://ascii-table.com/ansi-escape-sequences.php
+- http://bluesock.org/~willg/dev/ansi.html
+- https://github.com/k0kubun/go-ansi

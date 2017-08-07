@@ -15,7 +15,6 @@ const (
 
 const (
    CLEAR_CHAR   = ' '
-   SZ_ESC_RESET = "\x1B[0m\x1B[37;40m"
 )
 
 type GridDim uint64
@@ -69,13 +68,13 @@ func (gr *Grid) IncClamp(pos *GridPos, X, Y int) {
 type GridCell struct {
 
    Char     rune
-   Esc      *SGR
+   Brush    SGR
 }
 
 func (gc *GridCell) Clear() {
 
    gc.Char = CLEAR_CHAR
-   gc.Esc  = nil
+   gc.Brush.Reset()
 }
 
 type GridRow []GridCell
@@ -105,30 +104,9 @@ func (gr *Grid) Height() GridDim {
 
 type SGR struct {
 
-   Reset, Blink, Bold, Inverse, HighInt, Strikethrough, Underline bool
-   Bg_HighInt  bool
+   Bold, Faint, Italic, Underline, Blink, Inverse, Conceal, Strikethrough bool
    ColorTxt    string
    ColorBg     string
-}
-
-func SGR_Reset() SGR {
-
-   oSGR := SGR{}
-   oSGR.SGR_Reset()
-   return oSGR
-}
-
-func (sCodes *SGR) SGR_Reset() {
-
-   if sCodes == nil {
-      return
-   }
-
-   *sCodes = SGR{
-      Reset:    true,
-      ColorTxt: "37",
-      ColorBg:  "40",
-   }
 }
 
 func (sCodes *SGR) String() string {
@@ -137,18 +115,34 @@ func (sCodes *SGR) String() string {
 
    if sCodes != nil {
 
-      bsParts := []string{}
+      // START EVERY STRING WITH RESET?
+      bsParts := []string{"0"}
 
-      if sCodes.Reset {
-         bsParts = append(bsParts, "0")
+      bsIter := []struct{Set bool; Code string}{
+         {sCodes.Bold,          "1"},
+         {sCodes.Faint,         "2"},
+         {sCodes.Italic,        "3"},
+         {sCodes.Underline,     "4"},
+         {sCodes.Blink,         "5"},
+         {sCodes.Inverse,       "7"},
+         {sCodes.Conceal,       "8"},
+         {sCodes.Strikethrough, "9"},
       }
 
-      if sCodes.Bold {
-         bsParts = append(bsParts, "1")
-      }
+      // 1/21  X  bold
+      // 2/22  X  faint, normal intensity
+      // 3/23  X  italic
+      // 4/24  X  underline
+      // 5/6   X  blink, 25 blink-off
+      // 7/27  X  inverse
+      // 8/28  X  conceal/reveal
+      // 9/29  X  strikethrough
 
-      if sCodes.Blink {
-         bsParts = append(bsParts, "5")
+      for _, sCodeSet := range bsIter {
+
+         if sCodeSet.Set {
+            bsParts = append(bsParts, sCodeSet.Code)
+         }
       }
 
       if len(sCodes.ColorTxt) > 0 {
@@ -163,19 +157,6 @@ func (sCodes *SGR) String() string {
    }
 
    return sRet
-}
-
-func (pSGR *SGR) Clone() *SGR {
-
-   if pSGR != nil {
-
-      oNew := *pSGR
-      return &oNew
-
-   } else {
-
-      return &SGR{}
-   }
 }
 
 func HighColor(arCodes []int) (string, int) {
@@ -216,14 +197,26 @@ func HighColor(arCodes []int) (string, int) {
    return "", 0
 }
 
+func (sCodes *SGR) Reset() {
+
+   if sCodes == nil {
+      return
+   }
+
+   *sCodes = SGR{
+      ColorTxt:   "37",
+      ColorBg:    "40",
+   }
+}
+
 func (pSGR *SGR) Merge(biCodes []int) error {
 
 /*
    TODO: SOME OF BLOCKTRONICS IS BROKEN
-   TODO: COLOR PRESERVATION AFTER MOTION DRAW (transient bit?)
 */
 
    // TODO: pSGR = nil FOR B&W MODE
+   // TODO: USE LOGGER INSTEAD, GET CALL NAME FROM REFLECTION
    if pSGR == nil {
       return fmt.Errorf("SGR.Merge() called on nil pointer!")
    }
@@ -237,25 +230,62 @@ func (pSGR *SGR) Merge(biCodes []int) error {
       // RESET
       case 0:
 
-         pSGR.SGR_Reset()
-         pSGR.Reset = true
+         pSGR.Reset()
 
+      // BOLD
       case 1:
-
          pSGR.Bold = true
+      case 21:
+         pSGR.Bold = false
 
+      // FAINT
+      case 2:
+         pSGR.Faint = true
+      case 22:
+         pSGR.Faint = false
+
+      // ITALIC
+      case 3:
+         pSGR.Italic = true
+      case 23:
+         pSGR.Italic = false
+
+      // UNDERLINE
+      case 4:
+         pSGR.Underline = true
+      case 24:
+         pSGR.Underline = false
+
+      // BLINK
       case 5, 6:
-
          pSGR.Blink = true
+      case 25:
+         pSGR.Blink = false
+
+      // INVERSE
+      case 7:
+         pSGR.Inverse = true
+      case 27:
+         pSGR.Inverse = false
+
+      // CONCEAL
+      case 8:
+         pSGR.Conceal = true
+      case 28:
+         pSGR.Conceal = false
+
+      // STRIKETHROUGH
+      case 9:
+         pSGR.Strikethrough = true
+      case 29:
+         pSGR.Strikethrough = false
 
       // DEFAULT FG
       case 39:
-
          pSGR.ColorTxt = "37"
 
       // DEFAULT BG
       case 49:
-
          pSGR.ColorBg = "40"
 
       // HIGH COLOR FG
@@ -301,6 +331,9 @@ func (pSGR *SGR) Merge(biCodes []int) error {
 
 func (gr *Grid) Print(iWri io.Writer, bDebug bool) {
 
+   // RESET AND CHANGE TO WHITE ON BLACK
+   fmt.Fprint(iWri, "\x1B[0m\x1B[37;40m")
+
    for nRow, sRow := range gr.grid {
 
       if bDebug { fmt.Fprintf(iWri, "%5d: ", nRow + 1) }
@@ -321,13 +354,7 @@ func (gr *Grid) Print(iWri io.Writer, bDebug bool) {
             goto NEXT_LINE
          }
 
-         if cell.Esc == nil {
-
-            c = ' '
-         }
-
-         // TODO: NULL Esc HANDLING
-         szCurCode = cell.Esc.String()
+         szCurCode = cell.Brush.String()
 
          if( szCurCode != szLastCode ) {
 
@@ -339,12 +366,15 @@ func (gr *Grid) Print(iWri io.Writer, bDebug bool) {
 
 NEXT_LINE:
 
-      fmt.Fprint(iWri, SZ_ESC_RESET)
+      fmt.Fprint(iWri, "\x1B[0m")
 
       if bDebug { fmt.Fprint(iWri, "|") }
 
       fmt.Fprint(iWri, "\n")
    }
+
+   // RESET ALL TO DEFAULTS
+   fmt.Fprint(iWri, "\x1B[0m")
 }
 
 func (gr *Grid) ResetChars(rChar rune) {
@@ -378,7 +408,7 @@ func (gr *Grid) Touch(nLine GridDim) GridRow {
    return gr.grid[nLine]
 }
 
-func (gr *Grid) Put(pos GridPos, rChar *rune, bsCodes SGR) {
+func (gr *Grid) Put(pos GridPos, rChar *rune, sgrCodes SGR) {
 
    if (pos.X == 0) || (pos.Y == 0) {
       return
@@ -396,7 +426,8 @@ func (gr *Grid) Put(pos GridPos, rChar *rune, bsCodes SGR) {
          row[nCol].Char = *rChar
       }
 
-      row[nCol].Esc = bsCodes.Clone()
+      row[nCol].Brush = sgrCodes
+
    } else {
 
       // TODO: REMOVE ON RELEASE

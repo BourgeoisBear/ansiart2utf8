@@ -38,12 +38,6 @@ const (
    CHR_ESCAPE = 0x1B
    CHR_CR     = 0x0D
    CHR_LF     = 0x0A
-
-   // RESET AND CHANGE TO WHITE ON BLACK
-   SZ_ESC_RESET = "\x1B[0m\x1B[37;40m"
-
-   // RESET ALL TO DEFAULTS
-   SZ_ESC_FINAL_RESET = "\x1B[0m"
 )
 
 func fnErrExit(oErr error) {
@@ -143,7 +137,8 @@ OPTIONS
       bEsc        bool     = false
    )
 
-   bsSGR := ansi.SGR_Reset()
+   bsSGR := ansi.SGR{}
+   bsSGR.Reset()
    pGrid := ansi.GridNew( ansi.GridDim(*puiWidth) )
 
    // BUFFER OUTPUT
@@ -170,10 +165,7 @@ OPTIONS
       // HANDLE ESCAPE CODE SEQUENCE
       } else if bEsc {
 
-         // TODO: TEST ./textfiles/fruit.ans
-         // TODO: SGR MERGE-MAP
-         // TODO: COLORS!
-         // TODO: COLUMN TRUNCATION
+// TODO: COLUMN TRUNCATION
 
          // ESCAPE CODE TERMINATING CHARS:
          // EXIT ESCAPE CODE FSM SUCCESSFULLY ON TERMINATING 'm' CHARACTER
@@ -189,25 +181,11 @@ OPTIONS
 
                case 'm':
 
-                  // RESET SGR STACK ON RESET ESCAPE CODE
-                  if curCode.Params == "[0" {
+                  oErr = bsSGR.Merge(curCode.SubParams)
 
-                     // WRITE EXPLICIT RESET SINCE TYPICAL [0m USES
-                     // COLORS FROM USER SETTINGS INSTEAD OF BLACK-ON-WHITE
-                     bsSGR = ansi.SGR_Reset()
-
-                  // OTHERWISE, PUSH TO SGR STACK
-                  } else {
-
-                     oErr = bsSGR.Merge(curCode.SubParams)
-
-                     if *pbDebug && (oErr != nil) {
-                        fmt.Println(oErr)
-                     }
+                  if *pbDebug && (oErr != nil) {
+                     fmt.Println(oErr)
                   }
-
-                  // TODO: SKIP CHAR
-                  pGrid.Put(curPos, nil, bsSGR)
 
                // UP
                case 'A':
@@ -245,7 +223,7 @@ OPTIONS
 
                   curPos = curSaved
 
-               // TODO: J, K
+// TODO: J, K
 
                default:
 
@@ -299,7 +277,6 @@ OPTIONS
 
    pGrid.Print(pWriter, *pbDebug)
 
-   pWriter.WriteString(SZ_ESC_FINAL_RESET)
    pWriter.WriteByte(CHR_LF)
    pWriter.Flush()
 
