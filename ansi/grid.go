@@ -71,7 +71,7 @@ type GridCell struct {
    Brush    SGR
 }
 
-func (gc *GridCell) Clear() {
+func (gc *GridCell) ClearCell() {
 
    gc.Char = CLEAR_CHAR
    gc.Brush.Reset()
@@ -211,12 +211,7 @@ func (sCodes *SGR) Reset() {
 
 func (pSGR *SGR) Merge(biCodes []int) error {
 
-/*
-   TODO: SOME OF BLOCKTRONICS IS BROKEN
-*/
-
    // TODO: pSGR = nil FOR B&W MODE
-   // TODO: USE LOGGER INSTEAD, GET CALL NAME FROM REFLECTION
    if pSGR == nil {
       return fmt.Errorf("SGR.Merge() called on nil pointer!")
    }
@@ -320,7 +315,6 @@ func (pSGR *SGR) Merge(biCodes []int) error {
 
          } else {
 
-            // TODO: ENABLE/DISABLE W/DEBUG MODE
             return fmt.Errorf("SGR SKIPPED: %d", biCodes[i])
          }
       }
@@ -331,8 +325,17 @@ func (pSGR *SGR) Merge(biCodes []int) error {
 
 func (gr *Grid) Print(iWri io.Writer, bDebug bool) {
 
-   // RESET AND CHANGE TO WHITE ON BLACK
-   fmt.Fprint(iWri, "\x1B[0m\x1B[37;40m")
+/*
+   TODO: DELTA COMPRESSION
+   TODO: FIX 57chevy.ans & vday.ans
+   TODO: RLE/MOTION-ENCODE RUNS OF SPACE
+      - COMPRESS RUN OF THE SAME INTO Brush.First + ESC[#C
+      - COMPRESS PER-LINE
+   TODO: NO UNNECCESSARY RESET CODES (TEST W/ TRANSPARENT GUAKE)
+*/
+
+   // RESET BRUSH
+   fmt.Fprint(iWri, "\x1B[0m")
 
    for nRow, sRow := range gr.grid {
 
@@ -373,7 +376,7 @@ NEXT_LINE:
       fmt.Fprint(iWri, "\n")
    }
 
-   // RESET ALL TO DEFAULTS
+   // RESET BRUSH
    fmt.Fprint(iWri, "\x1B[0m")
 }
 
@@ -408,14 +411,25 @@ func (gr *Grid) Touch(nLine GridDim) GridRow {
    return gr.grid[nLine]
 }
 
-func (gr *Grid) Put(pos GridPos, rChar *rune, sgrCodes SGR) {
+func (pos GridPos) ErrInvalid() error {
+
+   return fmt.Errorf("INVALID POSITION %d, %d", pos.X, pos.Y)
+}
+
+func (pos GridPos) Normalize() (GridDim, GridDim, error) {
 
    if (pos.X == 0) || (pos.Y == 0) {
-      return
+      return 0, 0, pos.ErrInvalid()
    }
 
-   nLine := GridDim(pos.Y - 1)
-   nCol  := GridDim(pos.X - 1)
+   return GridDim(pos.X - 1), GridDim(pos.Y - 1), nil
+}
+
+func (gr *Grid) Put(pos GridPos, rChar *rune, sgrCodes SGR) error {
+
+   nCol, nLine, oErr := pos.Normalize()
+
+   if oErr != nil { return oErr }
 
    row := gr.Touch(nLine)
 
@@ -430,14 +444,19 @@ func (gr *Grid) Put(pos GridPos, rChar *rune, sgrCodes SGR) {
 
    } else {
 
-      // TODO: REMOVE ON RELEASE
-      fmt.Printf("INVALID POS: %+v\n", pos)
+      return pos.ErrInvalid()
    }
+
+   return nil
 }
 
-func (gr *Grid) ClearLine(nMode uint, nLine, nCol GridDim) {
+func (gr *Grid) ClearLine(pos GridPos, nMode uint) error {
 
    var i GridDim
+
+   nCol, nLine, oErr := pos.Normalize()
+
+   if oErr != nil { return oErr }
 
    row := gr.Touch(nLine)
 
@@ -446,19 +465,21 @@ func (gr *Grid) ClearLine(nMode uint, nLine, nCol GridDim) {
    case TO_BEGIN:
 
       for i = 0; (i <= nCol) && (i < gr.width); i++ {
-         row[i].Clear()
+         row[i].ClearCell()
       }
 
    case TO_END:
 
       for i = nCol; i < gr.width; i++ {
-         row[i].Clear()
+         row[i].ClearCell()
       }
 
    case ALL:
 
       for i = 0; i < gr.width; i++ {
-         row[i].Clear()
+         row[i].ClearCell()
       }
    }
+
+   return nil
 }

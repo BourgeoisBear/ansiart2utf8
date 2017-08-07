@@ -2,7 +2,15 @@
 #  = EXPAND ON USE
 APPNAME     := ansiart2utf8
 
-#ag -l --go | entr -c -s 'make buildtest'
+# TODO: INCLUDE TEST IMAGES IN GITHUB
+# TODO: NEW DEMO IMAGE IN MARKDOWN FILE
+
+# FOR LIVE TESTING (REQUIRES ag (siver-searcher) AND entr)
+# ag -l --go | entr -s 'make buildtest'
+
+# find -type f -name 'l*.ans' -exec ../../ansiart2utf8 -d -f {} \;
+
+# ls TEST.ans | entr -c -s 'cat ./TEST.ans'
 
 default: build
 
@@ -12,8 +20,9 @@ buildtest:
 
 test:
 	./ansiart2utf8 -d -f ./bt-will_be_blocks/ZOMBIE_KILLING.ans
-	./ansiart2utf8 -d -f ./bt-will_be_blocks/_07_Calendar_2017_July_by_Andy_Herbert.ans
-	./ansiart2utf8 -d -f ./textfiles/fruit.ans
+#	./ansiart2utf8 -d -f ./bt-will_be_blocks/_07_Calendar_2017_July_by_Andy_Herbert.ans
+	./ansiart2utf8 -d -f ./textfiles/artwork/fruit.ans
+#  ./ansiart2utf8 -d -w 200 -f ./bt-will_be_blocks/WZ\ -\ DJAC.ans
 
 debug:
 	ag -l --go | entr -s 'make run'

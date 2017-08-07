@@ -25,6 +25,7 @@ import (
    "flag"
    "fmt"
    "os"
+   "log"
    "runtime"
    "strings"
    "io/ioutil"
@@ -40,33 +41,25 @@ const (
    CHR_LF     = 0x0A
 )
 
-func fnErrExit(oErr error) {
-
-   fnErrExitEx(oErr, "")
-}
-
-func fnErrExitEx(oErr error, szMsg string) {
-
-   if oErr != nil {
-
-      if len(szMsg) > 0 {
-
-         fmt.Fprint(os.Stderr, szMsg, ":\n")
-      }
-
-      fmt.Fprint(os.Stderr, oErr, "\n")
-
-      os.Exit(1)
-   }
-}
-
 func main() {
 
    var (
-      oErr   error    = nil
+      oErr   error
       pFile  *os.File
    )
 
+   // ERROR LOGGING
+   pLogErr := log.New(os.Stderr, "", log.Lshortfile)
+   fnErrExit := func(oErr error) {
+
+      if oErr != nil {
+
+         pLogErr.Output(2, oErr.Error())
+         os.Exit(1)
+      }
+   }
+
+   // TRANSLATION ARRAY
    Array437 := [256]rune {
       '\x00','☺','☻','♥','♦','♣','♠','•','\b','\t','\n','♂','♀','\r','♫','☼',
       '►','◄','↕','‼','¶','§','▬','↨','↑','↓','→','\x1b','∟','↔','▲','▼',
@@ -90,7 +83,7 @@ func main() {
    pFile = nil
 
    const SZ_HELP_PREFIX = `
-ansiart2utf8 VERSION 0.1 BETA
+ansiart2utf8 VERSION 0.2 BETA
    Converts ANSI art to UTF-8 encoding, expands cursor forward ESC sequences
    into spaces, wraps/resets at a specified line width, sends result to STDOUT.
 
@@ -119,6 +112,15 @@ OPTIONS
       fnErrExit(fmt.Errorf("Invalid Parameters"))
    }
 
+   // DEBUG LOGGING
+   pLogDebug := log.New(os.Stdout, "", 0)
+   fnDebug := func(v ...interface{}) {
+
+      if *pbDebug {
+         pLogDebug.Output(2, fmt.Sprint(v...))
+      }
+   }
+
    // GET FILE HANDLE
    if strings.Compare(*pszInput, "-") == 0 {
 
@@ -128,14 +130,14 @@ OPTIONS
 
       pFile, oErr = os.Open(*pszInput)
       fnErrExit(oErr)
+
+      fnDebug("FILE: ", *pszInput)
    }
 
    bsInput, oErr := ioutil.ReadAll(pFile)
    fnErrExit(oErr)
 
-   var (
-      bEsc        bool     = false
-   )
+   bEsc := false
 
    bsSGR := ansi.SGR{}
    bsSGR.Reset()
@@ -183,8 +185,8 @@ OPTIONS
 
                   oErr = bsSGR.Merge(curCode.SubParams)
 
-                  if *pbDebug && (oErr != nil) {
-                     fmt.Println(oErr)
+                  if oErr != nil {
+                     fnDebug(oErr)
                   }
 
                // UP
@@ -223,24 +225,42 @@ OPTIONS
 
                   curPos = curSaved
 
-// TODO: J, K
+               // CLEAR TO END:0/BEGINNING:1/ALL:2,3 OF SCREEN
+               case 'J':
+
+                  // NOP
+
+/*
+   UNHANDLED CODE:   ESC[K; [1]
+   UNHANDLED CODE:   ESCc;
+   INVALID CODE:     ESC[MF;
+   INVALID CODE:     ESC[m;
+   INVALID CODE:     ESC[P;
+   INVALID CODE:     ESC[T;
+   INVALID CODE:     ESC[S;
+   UNHANDLED CODE:   ESC[@K; [1]
+   INVALID CODE:     ESC[@l;
+   INVALID CODE:     ESC[@S;
+   INVALID CODE:     ESC[@N;
+   INVALID CODE:     ESC[@u;
+   INVALID CODE:     ESC[@s;
+   INVALID CODE:     ESC[Mo3egc;
+*/
+// TODO: K,
+// TODO: ESC[?7h; - possibly "wrap" mode
+// TODO: ESC[m; == ESC[0m
 
                default:
 
-                  if *pbDebug {
-                     fmt.Println("UNHANDLED CODE: ", curCode.Debug())
-                  }
-
+                  fnDebug("UNHANDLED CODE: ", curCode.Debug())
                   continue
                }
 
-               // fmt.Println("SUCCESS: ", curCode.Debug())
+               // fnDebug("SUCCESS: ", curCode.Debug())
 
             } else {
 
-               if *pbDebug {
-                  fmt.Println("INVALID CODE: ", curCode.Debug())
-               }
+               fnDebug("INVALID CODE: ", curCode.Debug())
             }
 
             continue
@@ -263,13 +283,19 @@ OPTIONS
          if (chr == CHR_LF) {
 
             // TODO: REVISIT WHAT TO PUT IN /N PLACE
-            pGrid.Put(curPos, nil, bsSGR)
+            oErr = pGrid.Put(curPos, nil, bsSGR)
+
+            if oErr != nil { fnDebug(oErr) }
+
             curPos.Y += 1
             curPos.X = 1
 
          } else {
 
-            pGrid.Put(curPos, &Array437[chr], bsSGR)
+            oErr = pGrid.Put(curPos, &Array437[chr], bsSGR)
+
+            if oErr != nil { fnDebug(oErr) }
+
             pGrid.Inc(&curPos)
          }
       }

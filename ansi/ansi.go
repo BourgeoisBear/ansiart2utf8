@@ -246,5 +246,3 @@ func (pCode *ECode) String() string {
 
    return fmt.Sprintf("\x1B%s%c", pCode.Params, pCode.Code)
 }
-
-// TODO: APPLY CODE TO STATE FUNCTION

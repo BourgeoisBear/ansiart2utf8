@@ -7,6 +7,7 @@ Escape codes and line endings are processed for terminal friendliness.
 USAGE: ansiart2utf8 [OPTION]...
 
 OPTIONS
+  -d  DEBUG MODE: LINE NUMBERING + PIPE @ \n
   -f string
     	INPUT FILENAME, OR "-" FOR STDIN (default "-")
   -w uint
@@ -34,11 +35,15 @@ To build:
 
 **To see the result, make sure that your terminal font provides glyphs for the old CP437 box drawing characters.**<br/>Here are a few fonts that will do:
 
+- [Consolas](https://en.wikipedia.org/wiki/Consolas)
+- [Courier New](https://www.microsoft.com/typography/fonts/family.aspx?FID=10)
 - [DejaVu Sans Mono](https://github.com/dejavu-fonts/dejavu-fonts)
 - [Envy Code R](https://damieng.com/blog/2008/05/26/envy-code-r-preview-7-coding-font-released)
-- [Courier New](https://www.microsoft.com/typography/fonts/family.aspx?FID=10)
-- [Consolas](https://en.wikipedia.org/wiki/Consolas)
+- [Iosevka](https://be5invis.github.io/Iosevka/)
 
+SEEING Code Page 437 in Vim
+---------------------------
+:e ++enc=cp437
 
 RESOURCES
 ---------
