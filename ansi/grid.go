@@ -3,7 +3,6 @@ package ansi
 import (
    "fmt"
    "io"
-//   "strconv"
    "strings"
 )
 
@@ -14,7 +13,9 @@ const (
 )
 
 const (
-   CLEAR_CHAR   = ' '
+   COLOR_DEFAULT_TXT = "37"
+   COLOR_DEFAULT_BG  = "40"
+   CLEAR_CHAR        = ' '
 )
 
 type GridDim uint64
@@ -27,6 +28,84 @@ type GridPos struct {
 func NewPos() GridPos {
 
    return GridPos{ X: 1, Y: 1 }
+}
+
+type SGR struct {
+
+   Bold, Faint, Italic, Underline, Blink, Inverse, Conceal, Strikethrough bool
+   ColorTxt    string
+   ColorBg     string
+}
+
+func (sCodes *SGR) Reset() {
+
+   if sCodes == nil {
+      return
+   }
+
+   *sCodes = SGR{
+      ColorTxt:   COLOR_DEFAULT_TXT,
+      ColorBg:    COLOR_DEFAULT_BG,
+   }
+}
+
+type GridCell struct {
+
+   Char     rune
+   Brush    SGR
+}
+
+func (gc *GridCell) ClearCell() {
+
+   gc.Char = CLEAR_CHAR
+   gc.Brush.Reset()
+}
+
+type GridRow []GridCell
+
+type Grid struct {
+
+   width    GridDim
+   grid     []GridRow
+}
+
+func GridNew(nWidth GridDim) *Grid {
+
+   return &Grid{
+      width:  nWidth,
+      grid:   make([]GridRow, 0),
+   }
+}
+
+func (gr *Grid) touch(nRow GridDim) GridRow {
+
+   if nRow >= gr.Height() {
+
+      // ENHEIGHTEN
+      oldHeight := gr.Height()
+      sGrid := make([]GridRow, nRow + 1)
+      copy(sGrid, gr.grid)
+
+      // ADD NEW ROWS
+      for i := oldHeight; i <= nRow; i++ {
+
+         sGrid[i] = make([]GridCell, gr.width)
+
+         for j, _ := range sGrid[i] {
+
+            sGrid[i][j].Brush.Reset()
+         }
+      }
+
+      gr.grid = sGrid
+   }
+
+   return gr.grid[nRow]
+}
+
+func (gr *Grid) Height() GridDim {
+
+   return GridDim(len(gr.grid))
 }
 
 func (gr *Grid) Inc(pos *GridPos) {
@@ -65,100 +144,7 @@ func (gr *Grid) IncClamp(pos *GridPos, X, Y int) {
    }
 }
 
-type GridCell struct {
-
-   Char     rune
-   Brush    SGR
-}
-
-func (gc *GridCell) ClearCell() {
-
-   gc.Char = CLEAR_CHAR
-   gc.Brush.Reset()
-}
-
-type GridRow []GridCell
-
-type Grid struct {
-
-   width    GridDim
-   grid     []GridRow
-}
-
-func GridNew(nWidth GridDim) *Grid {
-
-   sRow  := make([]GridCell, nWidth)
-   sGrid := make([]GridRow, 1)
-   sGrid[0] = sRow
-
-   return &Grid{
-      width:  nWidth,
-      grid:   sGrid,
-   }
-}
-
-func (gr *Grid) Height() GridDim {
-
-   return GridDim(len(gr.grid))
-}
-
-type SGR struct {
-
-   Bold, Faint, Italic, Underline, Blink, Inverse, Conceal, Strikethrough bool
-   ColorTxt    string
-   ColorBg     string
-}
-
-func (sCodes *SGR) String() string {
-
-   sRet     := ""
-
-   if sCodes != nil {
-
-      // START EVERY STRING WITH RESET?
-      bsParts := []string{"0"}
-
-      bsIter := []struct{Set bool; Code string}{
-         {sCodes.Bold,          "1"},
-         {sCodes.Faint,         "2"},
-         {sCodes.Italic,        "3"},
-         {sCodes.Underline,     "4"},
-         {sCodes.Blink,         "5"},
-         {sCodes.Inverse,       "7"},
-         {sCodes.Conceal,       "8"},
-         {sCodes.Strikethrough, "9"},
-      }
-
-      // 1/21  X  bold
-      // 2/22  X  faint, normal intensity
-      // 3/23  X  italic
-      // 4/24  X  underline
-      // 5/6   X  blink, 25 blink-off
-      // 7/27  X  inverse
-      // 8/28  X  conceal/reveal
-      // 9/29  X  strikethrough
-
-      for _, sCodeSet := range bsIter {
-
-         if sCodeSet.Set {
-            bsParts = append(bsParts, sCodeSet.Code)
-         }
-      }
-
-      if len(sCodes.ColorTxt) > 0 {
-         bsParts = append(bsParts, sCodes.ColorTxt)
-      }
-
-      if len(sCodes.ColorBg) > 0 {
-         bsParts = append(bsParts, sCodes.ColorBg)
-      }
-
-      return "\x1B[" + strings.Join(bsParts, ";") + "m"
-   }
-
-   return sRet
-}
-
+// TODO: RETURN ERROR
 func HighColor(arCodes []int) (string, int) {
 
    nCodes := len(arCodes)
@@ -197,18 +183,6 @@ func HighColor(arCodes []int) (string, int) {
    return "", 0
 }
 
-func (sCodes *SGR) Reset() {
-
-   if sCodes == nil {
-      return
-   }
-
-   *sCodes = SGR{
-      ColorTxt:   "37",
-      ColorBg:    "40",
-   }
-}
-
 func (pSGR *SGR) Merge(biCodes []int) error {
 
    // TODO: pSGR = nil FOR B&W MODE
@@ -224,7 +198,6 @@ func (pSGR *SGR) Merge(biCodes []int) error {
 
       // RESET
       case 0:
-
          pSGR.Reset()
 
       // BOLD
@@ -277,11 +250,11 @@ func (pSGR *SGR) Merge(biCodes []int) error {
 
       // DEFAULT FG
       case 39:
-         pSGR.ColorTxt = "37"
+         pSGR.ColorTxt = COLOR_DEFAULT_TXT
 
       // DEFAULT BG
       case 49:
-         pSGR.ColorBg = "40"
+         pSGR.ColorBg = COLOR_DEFAULT_BG
 
       // HIGH COLOR FG
       case 38:
@@ -323,15 +296,77 @@ func (pSGR *SGR) Merge(biCodes []int) error {
    return nil
 }
 
+func (sCodes *SGR) IsEqual(pCodePrev *SGR) bool {
+
+   return (
+      (sCodes.Bold            == pCodePrev.Bold) &&
+      (sCodes.Faint           == pCodePrev.Faint) &&
+      (sCodes.Italic          == pCodePrev.Italic) &&
+      (sCodes.Underline       == pCodePrev.Underline) &&
+      (sCodes.Blink           == pCodePrev.Blink) &&
+      (sCodes.Inverse         == pCodePrev.Inverse) &&
+      (sCodes.Conceal         == pCodePrev.Conceal) &&
+      (sCodes.Strikethrough   == pCodePrev.Strikethrough) &&
+      (sCodes.ColorTxt        == pCodePrev.ColorTxt) &&
+      (sCodes.ColorBg         == pCodePrev.ColorBg))
+}
+
+func (sCodes *SGR) ToEsc(pCodePrev *SGR) string {
+
+   if (sCodes != nil) && (pCodePrev != nil) {
+
+      bsParts := []string{}
+
+      bsIter := []struct{BCurrent bool; Set string; Clear string; BPrev bool}{
+         {sCodes.Bold,          "1", "21", pCodePrev.Bold},
+         {sCodes.Faint,         "2", "22", pCodePrev.Faint},
+         {sCodes.Italic,        "3", "23", pCodePrev.Italic},
+         {sCodes.Underline,     "4", "24", pCodePrev.Underline},
+         {sCodes.Blink,         "5", "25", pCodePrev.Blink},
+         {sCodes.Inverse,       "7", "27", pCodePrev.Inverse},
+         {sCodes.Conceal,       "8", "28", pCodePrev.Conceal},
+         {sCodes.Strikethrough, "9", "29", pCodePrev.Strikethrough},
+      }
+
+      // 1/21  X  bold
+      // 2/22  X  faint, normal intensity
+      // 3/23  X  italic
+      // 4/24  X  underline
+      // 5/6   X  blink, 25 blink-off
+      // 7/27  X  inverse
+      // 8/28  X  conceal/reveal
+      // 9/29  X  strikethrough
+
+      for _, sITER := range bsIter {
+
+         if sITER.BCurrent && !sITER.BPrev {
+            bsParts = append(bsParts, sITER.Set)
+         } else if !sITER.BCurrent && sITER.BPrev {
+            bsParts = append(bsParts, sITER.Clear)
+         }
+      }
+
+      if (len(sCodes.ColorTxt) > 0) && (sCodes.ColorTxt != pCodePrev.ColorTxt) {
+         bsParts = append(bsParts, sCodes.ColorTxt)
+      }
+
+      if (len(sCodes.ColorBg) > 0) && (sCodes.ColorBg != pCodePrev.ColorBg) {
+         bsParts = append(bsParts, sCodes.ColorBg)
+      }
+
+      if len(bsParts) > 0 {
+         return "\x1B[" + strings.Join(bsParts, ";") + "m"
+      }
+   }
+
+   return ""
+}
+
 func (gr *Grid) Print(iWri io.Writer, bDebug bool) {
 
 /*
-   TODO: DELTA COMPRESSION
-   TODO: FIX 57chevy.ans & vday.ans
-   TODO: RLE/MOTION-ENCODE RUNS OF SPACE
-      - COMPRESS RUN OF THE SAME INTO Brush.First + ESC[#C
-      - COMPRESS PER-LINE
-   TODO: NO UNNECCESSARY RESET CODES (TEST W/ TRANSPARENT GUAKE)
+   NOTE: CAN'T ESC[nC COMPRESS BECAUSE OF TERMINAL BACKGROUND COLOR
+      - MAKE THIS AN OPTION FOR RUNS OF SPACE W/BG COLOR?
 */
 
    // RESET BRUSH
@@ -341,30 +376,27 @@ func (gr *Grid) Print(iWri io.Writer, bDebug bool) {
 
       if bDebug { fmt.Fprintf(iWri, "%5d: ", nRow + 1) }
 
-      szLastCode := ""
-      szCurCode  := ""
+      brushPrev := SGR{}
 
       for _, cell := range sRow {
 
-         c := cell.Char
-
-         switch( c ) {
-
-         case 0:
-            c = CLEAR_CHAR
-
-         case '\n':
+         if cell.Char == '\n' {
             goto NEXT_LINE
          }
 
-         szCurCode = cell.Brush.String()
+         // WRITE ESC CODE ON CHANGE
+         if !cell.Brush.IsEqual(&brushPrev) {
 
-         if( szCurCode != szLastCode ) {
-
-            fmt.Fprint(iWri, szCurCode)
-            szLastCode = szCurCode
+            szCode := cell.Brush.ToEsc(&brushPrev)
+            fmt.Fprint(iWri, szCode)
+            brushPrev = cell.Brush
          }
-         fmt.Fprintf(iWri, "%c", c)
+
+         if cell.Char == 0 {
+            cell.Char = CLEAR_CHAR
+         }
+
+         fmt.Fprintf(iWri, "%c", cell.Char)
       }
 
 NEXT_LINE:
@@ -375,9 +407,6 @@ NEXT_LINE:
 
       fmt.Fprint(iWri, "\n")
    }
-
-   // RESET BRUSH
-   fmt.Fprint(iWri, "\x1B[0m")
 }
 
 func (gr *Grid) ResetChars(rChar rune) {
@@ -389,26 +418,6 @@ func (gr *Grid) ResetChars(rChar rune) {
          sRow[ixCol].Char = rChar
       }
    }
-}
-
-func (gr *Grid) Touch(nLine GridDim) GridRow {
-
-   // ENHEIGHTEN
-   if nLine >= gr.Height() {
-
-      oldHeight := gr.Height()
-      sGrid := make([]GridRow, nLine + 1)
-      copy(sGrid, gr.grid)
-
-      for i := oldHeight; i <= nLine; i++ {
-
-         sGrid[i] = make([]GridCell, gr.width)
-      }
-
-      gr.grid = sGrid
-   }
-
-   return gr.grid[nLine]
 }
 
 func (pos GridPos) ErrInvalid() error {
@@ -431,7 +440,7 @@ func (gr *Grid) Put(pos GridPos, rChar *rune, sgrCodes SGR) error {
 
    if oErr != nil { return oErr }
 
-   row := gr.Touch(nLine)
+   row := gr.touch(nLine)
 
    // TODO: MODULUS/ALLOCATE HANDLING FOR OUT-OF-BOUNDS COLUMNS?
    if nCol < GridDim(len(row)) {
@@ -458,7 +467,7 @@ func (gr *Grid) ClearLine(pos GridPos, nMode uint) error {
 
    if oErr != nil { return oErr }
 
-   row := gr.Touch(nLine)
+   row := gr.touch(nLine)
 
    switch( nMode ) {
 

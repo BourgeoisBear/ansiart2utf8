@@ -43,7 +43,7 @@ To build:
 
 SEEING Code Page 437 in Vim
 ---------------------------
-:e ++enc=cp437
+`:e ++enc=cp437`
 
 RESOURCES
 ---------
