@@ -7,14 +7,16 @@ Escape codes and line endings are processed for terminal friendliness.
 USAGE: ansiart2utf8 [OPTION]...
 
 OPTIONS
-  -d  DEBUG MODE: LINE NUMBERING + PIPE @ \n
+  -bytes uint
+    	MAXIMUM OUTPUT BYTES PER-ROW (0 = NO LIMIT)
+  -d	DEBUG MODE: LINE NUMBERING + PIPE @ \n
   -f string
     	INPUT FILENAME, OR "-" FOR STDIN (default "-")
   -w uint
     	LINE WIDTH (default 80)
 ```
 
-BEFORE & AFTER
+Before & After
 --------------
 **BEFORE**
 ![Before ansiart2utf8 processing][imgBefore]
@@ -25,7 +27,7 @@ BEFORE & AFTER
 [imgBefore]: ansiart2utf8-before.gif "ANSI in Terminal Before Processing"
 [imgAfter]: ansiart2utf8-after.gif "ANSI in Terminal After Processing"
 
-NOTES
+Notes
 -----
 To build:
 
@@ -41,11 +43,11 @@ To build:
 - [Envy Code R](https://damieng.com/blog/2008/05/26/envy-code-r-preview-7-coding-font-released)
 - [Iosevka](https://be5invis.github.io/Iosevka/)
 
-SEEING Code Page 437 in Vim
+Seeing Code Page 437 in Vim
 ---------------------------
 `:e ++enc=cp437`
 
-RESOURCES
+Resources
 ---------
 - [PabloDraw](http://picoe.ca/products/pablodraw/), an ANSI drawing program for Windows
 - [ACiDDraw](http://www.acid.org/apps/apps.html), an ANSI drawing program for DOS
@@ -57,7 +59,7 @@ RESOURCES
   https://en.wikipedia.org/wiki/ANSI_escape_code<br/>
   https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
 
-MEDIA
+Media
 -----
 - http://artscene.textfiles.com/ansi/
 - https://www.ansilove.org/bbs.html

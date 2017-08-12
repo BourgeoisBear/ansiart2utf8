@@ -2,15 +2,10 @@
 #  = EXPAND ON USE
 APPNAME     := ansiart2utf8
 
-# TODO: INCLUDE TEST IMAGES IN GITHUB
-# TODO: NEW DEMO IMAGE IN MARKDOWN FILE
-
 # FOR LIVE TESTING (REQUIRES ag (siver-searcher) AND entr)
 # ag -l --go | entr -s 'make buildtest'
 
-# find -type f -name 'l*.ans' -exec ../../ansiart2utf8 -d -f {} \;
-
-# ls TEST.ans | entr -c -s 'cat ./TEST.ans'
+# find -type f -name '*.ans' -exec ../../ansiart2utf8 -d -f {} \;
 
 default: build
 
@@ -19,11 +14,11 @@ buildtest:
 	reset ; go build -v -o $(APPNAME) ; if [ $$? -eq 0 ] ; then make test ; fi
 
 test:
-	./ansiart2utf8 -f ./test_data/ZOMBIE_KILLING.ans > ./processed.ans
 	./ansiart2utf8 -d -f ./test_data/ZOMBIE_KILLING.ans
 	./ansiart2utf8 -d -f ./test_data/_07_Calendar_2017_July_by_Andy_Herbert.ans
 	./ansiart2utf8 -d -f ./test_data/fruit.ans
-#  ./ansiart2utf8 -d -w 200 -f ./bt-will_be_blocks/WZ\ -\ DJAC.ans
+#	./ansiart2utf8 -d -w 200 -f ./bt-will_be_blocks/WZ\ -\ DJAC.ans
+#	./ansiart2utf8 -d -w 220 -f ./bt-will_be_blocks/WZ\ -\ Gord\ Downie.ans | tee ./processed.ans
 
 debug:
 	ag -l --go | entr -s 'make run'
