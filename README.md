@@ -32,8 +32,7 @@ Notes
 To build:
 
 1. Install the latest Go compiler from https://golang.org/dl/
-2. Change to project folder: `cd ./ansiart2utf8`
-3. Build executable: `go build ./ansiart2utf8.go`
+2. go get github.com/BourgeoisBear/ansiart2utf8
 
 **To see the result, make sure that your terminal font provides glyphs for the old CP437 box drawing characters.**<br/>Here are a few fonts that will do:
 
