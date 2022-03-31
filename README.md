@@ -1,9 +1,9 @@
-ansiart2utf8
-============
+# ansiart2utf8
+
 Processes legacy BBS-style ANSI art (ACiDDraw, PabloDraw, etc.) to UTF-8.<br/>
 Escape codes and line endings are processed for terminal friendliness.
 
-```
+```sh
 USAGE: ansiart2utf8 [OPTION]...
 
 OPTIONS
@@ -16,19 +16,17 @@ OPTIONS
     	LINE WIDTH (default 80)
 ```
 
-Before & After
---------------
-**BEFORE**
+## BEFORE
 ![Before ansiart2utf8 processing][imgBefore]
 
-**AFTER**
+## AFTER
 ![After ansiart2utf8 processing][imgAfter]
 
 [imgBefore]: docs/before.png "ANSI in Terminal Before Processing"
 [imgAfter]: docs/after.png "ANSI in Terminal After Processing"
 
-Notes
------
+## Notes
+
 To build:
 
 1. Install the latest Go compiler from https://golang.org/dl/
@@ -42,12 +40,12 @@ To build:
 - [Envy Code R](https://damieng.com/blog/2008/05/26/envy-code-r-preview-7-coding-font-released)
 - [Iosevka](https://be5invis.github.io/Iosevka/)
 
-Seeing Code Page 437 in Vim
----------------------------
+## Seeing Code Page 437 in Vim
+
 `:e ++enc=cp437`
 
-Resources
----------
+## Resources
+
 - [PabloDraw](http://picoe.ca/products/pablodraw/), an ANSI drawing program for Windows
 - [ACiDDraw](http://www.acid.org/apps/apps.html), an ANSI drawing program for DOS
 - Lots of ANSI art to be seen here:<br/>http://blocktronics.org/artpacks/
@@ -58,8 +56,8 @@ Resources
   https://en.wikipedia.org/wiki/ANSI_escape_code<br/>
   https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
 
-Media
------
+## Media
+
 - http://artscene.textfiles.com/ansi/
 - https://www.ansilove.org/bbs.html
 - http://bbs.ninja/
