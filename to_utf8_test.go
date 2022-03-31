@@ -13,8 +13,6 @@ import (
 //const TEST_DIR = "./test_data"
 const TEST_DIR = "./test_data/artwork"
 
-//const TEST_DIR = "./test_data/holiday"
-
 func TestToUTF8(t *testing.T) {
 
 	// BUFFER OUTPUT

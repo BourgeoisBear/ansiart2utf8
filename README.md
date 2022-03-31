@@ -24,8 +24,8 @@ Before & After
 **AFTER**
 ![After ansiart2utf8 processing][imgAfter]
 
-[imgBefore]: docs/ansiart2utf8-before.gif "ANSI in Terminal Before Processing"
-[imgAfter]: docs/ansiart2utf8-after.gif "ANSI in Terminal After Processing"
+[imgBefore]: docs/before.png "ANSI in Terminal Before Processing"
+[imgAfter]: docs/after.png "ANSI in Terminal After Processing"
 
 Notes
 -----
