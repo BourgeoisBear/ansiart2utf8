@@ -1,0 +1,8 @@
+[40m[2J[2H[3H[4H[5H[43m                          [0;1;43mMilwaukee BBS. File Menu                            [6H  [44m                                                                        [43m    [7H  [44m  <U>............ Upload A [40m[s
+[u[44mFile      <L>.. List Files In This Area      [2C[43m  [8H  [44m  <D>.......... Download A File      <N>...............  New Files      [2C[43m  [9H  [44m  <F>.............. Find A File      <T>.. Text Search Description      [2C[40m[s
+[u[43m  [10H  [44m                                                                        [2C[43m  [11H  [44m                                                                        [2C[43m  [12H  [44m  <V>...... View A File Archive    [40m[s
+[u[44m  <C>......... Change File Area      [2C[43m  [13H  [44m  <R>......... Read A Text File                                         [2C[43m  [14H  [44m                                     [32m<M>.......... Message Section      [2C[40m[s
+[u[43m  [15H  [44m  [37m<@>.......... Sysop Utilities      [31m<Q>........ Quit To Main Menu      [2C[43m  [16H  [44m  [37m<E>............. Erase A File      [0;31;44m<G>........ Goodbye & Log Off      [2C[43m  [17H    [72C  [18H [40m[s
+[u[43m                               [1;37mSysop Menu                                    [19H[20H[21H[22H[23H[0m
+
+

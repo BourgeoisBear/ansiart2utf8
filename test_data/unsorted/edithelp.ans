@@ -1,0 +1,25 @@
+[40m[2J[27C[0;1mV[34mi[37mS[34mi[37mON-[34mX F[37mull [34mS[37m[s
+[ucreen [34mE[37mditor[2;1H[3;1H^[34mE [37mCursor up[10C^[34mR [s
+[u[37mPage up[8C^[34mY [37mDelete line[5C^[34mJ [37mJoin lines
+[4;1H^[34mX [37mCursor down[8C^[34mC [37mPage down[6C^[34mT [37mDe[s
+[ulete word[5C^[34mB [37mBreak line[5;1H^[34mS [37mCursor left[8C^[s
+[u[34mA [37mWord left[6C^[34mG [37mDelete char[5C^[34mN [37mInsert[s
+[u line[6;1H^[34mD [37mCursor right[7C^[34mF [37mWord right[5C^[s
+[u[34mP [37mTo end of line  ^[34mK [37mOther commands[7;1H^[34mV [s
+[u[37mToggle insert mode ^[34mQ [37mStart of line  ^[34mW [37mEnd of [s
+[uline[5C^[34mZ [37mUser Macro[8;1H[9;1H  These normal commands work[s
+[u[34m,[8C[37mOr[34m, [37mwhen you press ^[34mK[37m, the following
+[10;1Has with most all BBS Softwares[34m:[6C[37mcommands are valid at t[s
+[uhe Cmd[34m: [37mprompt[34m...[11;1H[12;1H    /[37mA  [34mT[37mo [s
+[uAbort a Message[10C[34m^[37mK [34mA  A[37mbort Message    [34m^[s
+[u[37mK [34mQ  Q[37muote Message[13;1H    [34m/[37mQ  [34mT[37mo Q[s
+[uuote a Message[10C[34m^[37mK [34mF  F[37mormat Paragraph [34m^[s
+[u[37mK [34mS  S[37mave Message[14;1H    [34m/[37mS  [34mT[37mo Sa[s
+[uve a Message[11C[34m^[37mK [34mP  P[37mage Preview[5C[34m^[37mK [s
+[u[34mU  U[37mpload Ascii[15;1H    [34m/[37mU  [34mT[37mo Upload As[s
+[ucii at end of Msg[16;1H[17;1H[18C[34mType [37m|[34m## right before[s
+[u your text for [37mC[30mo[34ml[35mo[33mr[32m.[36m.[31m.[18;1H
+[19;1H [30m|00 [0mBlack [34m|01 Blue [32m|02 Green [36m|03 Cyan [31m[s
+[u|04 Red [35m|05 Magenta [33m|06 Brow [37m|07 White[1;34m³[20;1H [s
+[u[30m|08 GREY  [34m|09 BLUE [32m|10 GREEN [36m|11 CYAN [31m|12 RED [s
+[u[35m|13 MAGENTA [33m|14 YELL [37m|15 WHITE[34m³[21;1H[0m

@@ -1,0 +1,130 @@
+[2J[0m[11C_[1;30m__ Ú--[0m-[1m¿    [30mÚ--[0m-[1m¿    Ú[0m-[1;30m------¿[37mÚ[0m-[1;30m------¿Ú------[0m-[1m¿[30mÚ------[0m-[1m¿[0m
+[10C[1m([0m_[1;30m__)³   [0m|    [1;30m³ù[0m-[1mª[0m|    |    [1;30mù[0m-[1mª[30m³[0m|    [1;30mù[0m-[1mª[30m³³[0m[7C|[1;30m³[0m[7C|
+[11C[1;30m___ ³   ³    ³  [0m|[1;30m³    ³[0m[6C|[1;30m³³[0m[6C|[1;30m³³   ³___|³   ³___|[0m
+[10C[1;30m³ù[0m-[1mª[30m³³   ³___ ³  :³___ ³   |  :³³   ³  :³³    ù[0m-[1mª[30m³³    ù[0m-[1mª[30m³.fl[0m
+[1;30m  [37m........[30m³  [0m|[1;30m³³   ³ù[0m-[1mª[30m³³   ³   ³³   ³   ³³   |___||___   [0m|[1;30m³|___   [0m|[1;30m³[37m........[0m
+[1m [0mxxxxxxxxx[1;30m³  :³³   |  [0m|[1;30m³³   |   ³³   ³   ³³   ³   ³³   ³  :³³   ³  :³[0mxxxxxxxxx
+[1;30m%%%%%%%%%%[0mÀ[1m-[0m-[1;30m-Ù[0mÀ[1m-[0m-[1;30m-----Ù[0mÀ[1m-[0m-[1;30m-----Ù[0mÀ[1m-[0m-[1;30m-|---Ù[0mÀ[1m-[0m-[1;30m-----Ù[0mÀ[1m-[0m-[1;30m-----Ù[0mÀ[1m-[0m-[1;30m-----Ù%%%%%%%%%%[0m
+[1mÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ[0mÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ[30;47mRenegade[37;40mÛ[30;47m10-05[37;40mÛ[30;47mSysOp[37;40mÛ[30;47mMenu[37;40mÛ[30;47mCommands[37;40mÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ[1;30mßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß[0m [1;30m(C)[0m [1;30mDreadWolf iLLNESS 95'[0m
+
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄ[37mBoard[30mÄ[37mInfo[30mÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[6C[1mBoard Name:[0m %BN
+[6C[1mBoard Number: [0m%BP
+[6C[1mNode Number: [0m%ND
+[6C[1mSysOp: [0m%SN
+
+[6C[1mColors: ^11 ^22 ^33 ^44 ^55 ^66 ^77 ^88 ^99|16[0m
+
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[24;1H%PA
+[2J[1;1H|15ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄÄ[37mMisc[30mÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[7C[36m-C[37m  [1m  [0mDisplay Message         [1m   [0m[3C[36m-S[37m  [1m  [0mAdd line to SysOp log
+[7C[36m-F[37m  [1m  [0mDisplays a text file    [1m   [0m[3C[36m-Y[37m  [1m  [0mAsk Question, Default Yes[1m  [0m
+[7C[36m-L[37m  [1m  [0mDisplays line of text   [1m [0m[5C[36m-;[37m  [1m  [0mExecute Macro            
+[7C[36m-N[37m  [1m  [0mAsk Question, Default No[1m   [0m[3C[36m-$[37m  [1m  [0mPrompt for Password      [1m  [0m
+[7C[36m-Q[37m  [1m  [0mRead an infoform        [1m [0m[5C[36m-^[37m  [1m  [0mGoto menu          [4C  [1m  [0m
+[7C[36m-R[37m  [1m  [0mRead infoform answers   [1m   [0m[3C[36m-/[37m  [1m  [0mGosub menu             
+[7C[36m-\[37m  [1m  [0mReturn from menu[36C   [4C  [1m  [0m
+
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄ[37mDoors[30mÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[7C[36mDC[37m  [1m  [0mChain.Txt (WWIV) Door[9C[36mDW [37m [1m  [0mCallinfo.BBS (Wildcat) Door
+[7C[36mDD[37m  [1m  [0mDorinfo1.Def (RBBS) Door[6C[36mDP [37m [1m  [0mPCBoard.SYS  (PCBoard) Door
+[7C[36mDG[37m  [1m  [0mDoor.Sys (GAP) Door[11C[36mD- [37m [1m  [0mDoor w/ no interface file
+[7C[36mDS[37m  [1m  [0mSfdoors.Dat (Spitfire) Door
+
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄ[37mArchive[30mÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[7C[36mAA[37m  [1m  [0mAdd files to archive      [1m [0m[3C[36mAM[37m  [1m  [0mModify comments    
+[7C[36mAC[37m  [1m  [0mConvert archive           [1m [0m[3C[36mAR[37m  [1m  [0mRearchive files    
+[7C[36mAE[37m  [1m  [0mExtract files from archive[4C[36mAT[37m  [1m  [0mRun Integrity tests
+[7C[36mAG[37m  [1m  [0mManipulate extracted files[1m [0m
+[24;1H%PA
+[2J[1;1H[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄ[37mHangup[30mÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[32C[1m            [0m
+[7C[36mHC[37m[3C[1m [0mCareful logoff  [1m         [0m  [1m  [0;36m HM[3C[37m Display string and logoff
+[7C[36mHI[37m[3C[1m [0mImmediate logoff[9C[1m      [0m
+
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄÄ[37mFile[30mÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[37C[1m       [0m
+[7C[36mFA[37m  [1m  [0mChange file area [L=Lst,+,-] [1m [0;36mFL[37m  [1m  [0mList files                   
+[7C[36mFB[37m  [1m  [0mAdd file to batch            [1m [0;36mFN[37m  [1m  [0mNewscan files [C=Crnt,G=Glob]
+[7C[36mFD[37m  [1m  [0mDownload a file               [36mFP[37m  [1m  [0mChange Pointer Date          
+[7C[36mFF[37m  [1m  [0mSearch for a description     [1m [0;36mFS[37m  [1m  [0mSearch for a filespec        [1m  [0m[7C[36mFU[37m  [1m  [0mUpload a file             [4C[36mF@[37m  [1m  [0mCreate temporary directory
+[7C[36mFV[37m  [1m  [0mView an archive           [4C[36mF#[37m  [1m  [0mChange file area          
+[7C[36mFZ[37m  [1m  [0mSet file areas to newscan 
+[42C[1m  [0m[33C[1m   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄ[37mBatch[30mÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[37C[1m       [0m
+[7C[36mBC[37m  [1m [0m Clear batch Queue (U=Upload) [1m [0;36mBR[37m  [1m [0m Remove file in queue (U=Upload)[7C[36mBD[37m  [1m [0m Download batch queue   [7C[36mBU[37m  [1m [0m Upload queue
+[7C[36mBL[37m  [1m [0m List batch Queue  (U=Upload) [1m [0;36mB?[37m  [1m [0m List files in batch queue 
+[24;1H%PA
+[2J[1;1H[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄ[37mMessage[30mÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[7C[36mME[37m  [1m  [0mSend Private Email[12C[36mMA[37m  [1m  [0mChange Message Area (L=Lst,+,-)[7C[36mMK[37m  [1m  [0mEdit/Delete outgoing mail[5C[36mMN[37m  [1m  [0mNewscan messages (C=Crnt,G=Glb)[7C[36mML [37m [1m  [0mSend Mass Mail[16C[36mMM[37m  [1m  [0mRead Private Mail
+[7C[36mMP[3C[1;37m [0mPost a message[16C[36mMZ[37m[3C[1m [0mSet message bases to scan
+[7C[36mMR[3C[1;37m [0mRead messages[17C[36mM#[37m[3C[1m [0mChange message base      
+[7C[36mMS[3C[1;37m [0mScan messages[17C[36mMY[37m[3C[1m [0mScan for personal messages
+[7C[36mMU[3C[1;37m [0mList users w/ access to base
+
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄ[37mAutomessage[30mÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[33C[1m [0m
+[7C[36mUA [37m [1m [0m Reply to automessage     [1m  [0;36m   UW  [1;37m [0m Write automessage
+[1m     [0m  [36mUR [37m [1m [0m Read automessage         [1m [0m
+[0m
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄ[37mFile[30mÄ[37mList[30mÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[6C[36mL1[37m  [1m  [0mContinue listing      [9C[36mL3[37m  [1m  [0mNext file base
+[6C[36mL2[37m  [1m  [0mQuit listing          [6C[1m   [0;36mL4[37m  [1m  [0mToggle newscan of base
+
+[1;37mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄ[37mCredits[30mÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[40C[1m   [0m
+[7C[36m$-[3C[37m Decrease Balance[11C[36m   $+   [37m Increase Balance
+[24;1H%PA
+[2J[1;1H[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄ[37mSysOp[30mÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[7C[36m*B[37m  [1m  [0mMessage Base Editor    [1m [0m[6C[36m*1[37m  [1m  [0mEdit files in file area  [1m [0m
+[7C[36m*C[37m  [1m  [0mChange to another user [1m [0m[6C[36m*2[37m  [1m  [0mSort files               [1m [0m
+[7C[36m*D[37m  [1m  [0mEnter Pseudo-DOS       [1m [0m[6C[36m*3[37m  [1m  [0mRead all private mail   
+[7C[36m*E[37m  [1m  [0mEvent Editor           [1m [0m[6C[36m*4[37m  [1m  [0mDownload ANY file        [1m [0m
+[7C[36m*F[37m  [1m  [0mFile Base editor       [1m [0m[6C[36m*5[37m  [1m  [0mRecheck file sizes/avail [1m [0m
+[7C[36m*L[37m  [1m  [0mShow SysOp Logs        [1m [0m[6C[36m*6[37m  [1m  [0mUpload locally           [1m [0m
+[7C[36m*N[37m  [1m  [0mEdit a text file       [1m    [0m[3C[36m*7[37m  [1m  [0mValidate files           [1m [0m
+[7C[36m*P[37m  [1m  [0mSystem Config Editor   [1m       [0;36m*8[37m  [1m  [0mAdd GIF specs to files   [1m [0m
+[7C[36m*R[37m  [1m  [0mConference Editor      [1m       [0;36m*9[37m  [1m  [0mPack Message Bases       [1m [0m
+[7C[36m*U[37m  [1m  [0mUser Editor            [1m [0m[3C[1m   [0;36m*#[37m  [1m  [0mMenu Editor              [1m [0m
+[7C[36m*V[37m  [1m  [0mVoting Editor          [1m       [0;36m*$[37m  [1m  [0mFull Directory           [1m [0m
+[7C[36m*X[37m  [1m  [0mProtocol Editor        [1m [0m[6C[36m*%[37m  [1m  [0mCondensed Directory      [1m [0m
+[7C[36m*Z[37m  [1m  [0mSystem Activity Log    [1m        [0m
+
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄ[37mVoting[30mÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m
+[7C[36mV#[37m  [1m [0mVote on a topic number [1m     [0m[3C[36mVU[37m  [1m [0mUsers who voted on a topic
+[7C[36mVA[37m  [1m [0mAdd a voting topic     [1m    [0m[4C[36mVT[37m  [1m [0mTrack a user's votes      
+[7C[36mVL[37m  [1m [0mList voting topics     [1m     [0m[3C[36mVV[37m  [1m [0mVote on all unvoted topics
+[7C[36mVR[37m  [1m [0mResults of a topic     [1m     [0m
+[24;1H%PA
+[2J[1;1H[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄ[37mOffiline[30mÄ[37mMail[30mÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[38C[1m  [0m
+[7C[36m!P[37m[3C[1m [0mSet message pointers[5C[1m  [0m[3C[36m!U[37m[3C Upload a .REP packet
+[7C[36m!D[37m[3C[1m [0mDownload a .QWK packet[4C[1m [0m
+[35C[1m     [0m
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄ[37mOther[30mÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[32C[1m        [0m
+[7C[36mO1 [37m [1m  [0mShuttle: Log on, BBS Passwd   [36mOL [37m [1m [0m List Today's Callers
+[7C[36mO2 [37m [1m  [0mShuttle: Apply as new user[4C[36mON [37m [1m [0m Clear Screen
+[7C[36mO3 [37m [1m  [0mShuttle; Password Prompt[6C[36mOP [37m [1m [0m Modify User Info (Name, Age...)[7C[36mOA [37m [1m  [0mAutovalidation (Password)[5C[36mOR [37m [1m [0m Join a Conference
+[7C[36mOB [37m [1m  [0mAdd Entry to BBS List[9C[36mOS [37m [1m [0m System Bulletins
+[7C[36mOC [37m [1m  [0mPage the SysOp[16C[36mOU [37m [1m [0m Complete User Listing
+[7C[36mOE [37m [1m  [0mPause Screen [17C[36mOY [37m [1m [0m User's Info Display
+[7C[36mOF [37m [1m  [0mToggles AR flag (+-! AR Flag) [36mOG [37m [1m [0m Toggles AC flag (+-! AC Flag)
+[70C[1m       [0m
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄ[37mMulti[30mÄ[37mNode[30mÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[5C  [1m                                 [0m
+[21C[1m                   [0m
+[7C[36mNA[37m[3C[1m [0mToggle Page Availability    [1m  [0;36mNS[37m[3C[1m [0mSend message to node      
+[1m     [0m  [36mND[37m[3C[1m [0mHangup/Take down a node     [1m  [0;36mNT[37m[3C[1m [0mToggle stealth on/off     
+[7C[36mNG[37m[3C[1m [0mJoin Group Chat             [1m  [0;36mNW[37m   [1m [0mSet what they're doing    
+[7C[36mNO[37m[3C[1m [0mOnline Users Listing       [3C[36mNP[37m[3C[1m [0mPage another user for chat[0m
+[24;1H%PA
+[2J[1;1H[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄ[37mTime[30mÄ[37mBank[30mÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[39C [1m    [0m
+[7C[36m$D[37m    Deposit Time [13C [1m  [0;36m $W[37m  [1m  [0mWithdraw Time
+[39C [36m  [37m
+[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄ[37mRead[30mÄ[37mPrompt[30mÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m[35C     [1m    [0m
+[7C[36mR# [37m [1m  [0mMessage Number[13C[1m   [0;36mRL[37m  [1m [0m List messages
+[7C[36mR- [37m [1m  [0mRead previous msg[10C[1m   [0;36mRM[37m  [1m [0m Move msg (msg sysop only)
+[7C[36mRA [37m [1m  [0mRead msg again[13C[1m   [0;36mRN[37m  [1m [0m Next Message
+[7C[36mRB [37m [1m  [0mBack in thread[13C[1m   [0;36mRQ[37m  [1m [0m Quit reading
+[7C[36mRC [37m [1m  [0mContinuous read[12C[1m   [0;36mRR[37m  [1m [0m Reply to message
+[7C[36mRD [37m [1m  [0mDelete message (owner only)[3C[36mRT[37m  [1m [0m Toggle newscan
+[7C[36mRE [37m [1m  [0mEdit msg (owner only)[6C[1m   [0;36mRU[37m  [1m [0m Edit author (sysop only)
+[7C[36mRF [37m [1m  [0mForward in thread[13C[36mRX[37m  [1m [0m Extract msg (co sysop only)
+[7C[36mRG [37m [1m  [0mGoto next base[13C[1m   [0;36mRI[37m  [1m [0m Ignore remaining
+[7C[36mRH [37m [1m  [0mHighread pointer set[7C[1m   [0;36m
+
+|16|00|15[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1;30mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0mÄÄÄÄÄÄÄÄÄÄÄÄÄ[1mÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ[0m

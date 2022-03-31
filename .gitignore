@@ -1,2 +1,5 @@
-ansiart2utf8
+Session.vim
 processed.ans
+cmd/cmd
+bt-tcf/**
+bt-will_be_blocks/**

@@ -1,0 +1,22 @@
+  
+          ษออออออออ Screen File Upload for Copy into GT Message ออออออป
+          บ  File Save using TheDraw:                                 บ
+          บ  Format: ANSI  Video Prep: Clear Screen  Display Speed: 0 บ
+          บ  Line Length: 72  File Size: Under 30K                    บ
+          บ  This process is for full screen files and files that are บ
+          บ  more than 70 lines long.                                 บ
+          บ  Tips:                                                    บ
+          บ  Use a text editor to make sure the color reset sequence  บ
+          บ  ^[[0m  is at the end of your screen file. Some editors   บ
+          บ  display ^[ (ESC) as a small left arrow.                  บ
+          บ  Using the same editor enter a CTRL-E character ( or ^E) บ
+          บ  as the first character of the first line in the file.    บ
+          บ  Move to the first blank line at the end of the file and  บ
+          บ  enter another CTRL-E character.                          บ
+          บ  Check with your SYSOP about the following process!       บ
+          บ  Enter a blank message in the ANSI message area. Upload   บ
+          บ  your screen as a file. Leave the SYSOP a message to copy บ
+          บ  the file into the appropriate message number.            บ
+          ศอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+  
+  
