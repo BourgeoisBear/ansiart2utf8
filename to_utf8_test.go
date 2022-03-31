@@ -7,9 +7,6 @@ import (
 	"testing"
 )
 
-// TODO: new screenshot
-// TODO: update documentation
-
 //const TEST_DIR = "./test_data"
 const TEST_DIR = "./test_data/artwork"
 
