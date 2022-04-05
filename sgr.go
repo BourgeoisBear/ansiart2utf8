@@ -79,20 +79,25 @@ func (pS *SGR) ToEsc(pPrev *SGR, bAsDiff, bFakeEscape bool) string {
 		{SGR_STRIKETHROUGH, 9, 29},
 	}
 
-	// APPEND ANSI CODES FOR TEXT STYLE
 	flagDiff := pS.Flags ^ pPrev.Flags
+
+	// APPEND ANSI CODES FOR TEXT STYLE
 	for _, sITER := range bsIter {
 
-		// CLEAR
-		if bAsDiff && ((sITER.Flag & flagDiff) != 0) {
-			if (sITER.Flag & pS.Flags) != 0 {
-				sParts = append(sParts, sITER.Set)
-			} else {
-				sParts = append(sParts, sITER.Clear)
-			}
-		}
+		if bAsDiff {
 
-		if (sITER.Flag & pS.Flags) != 0 {
+			// NOTE flagDiff (A XOR B) HAS 1s WHERE ATTRIBUTES DIFFER
+			if (sITER.Flag & flagDiff) != 0 {
+
+				if (sITER.Flag & pS.Flags) != 0 {
+					sParts = append(sParts, sITER.Set)
+				} else {
+					sParts = append(sParts, sITER.Clear)
+				}
+			}
+
+		} else if (sITER.Flag & pS.Flags) != 0 {
+
 			sParts = append(sParts, sITER.Set)
 		}
 	}
