@@ -16,8 +16,6 @@ Escape codes and line endings are processed for terminal friendliness.
 
 ## INSTALLATION
 
-To build:
-
 1. Install the latest Go compiler from https://golang.org/dl/
 2. Install the program:
 
