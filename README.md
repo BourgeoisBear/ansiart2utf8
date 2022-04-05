@@ -5,6 +5,28 @@
 Processes legacy BBS-style ANSI art (ACiDDraw, PabloDraw, etc.) to UTF-8.<br/>
 Escape codes and line endings are processed for terminal friendliness.
 
+## BEFORE
+![Before ansiart2utf8 processing][imgBefore]
+
+## AFTER
+![After ansiart2utf8 processing][imgAfter]
+
+[imgBefore]: docs/before.png "ANSI in Terminal Before Processing"
+[imgAfter]: docs/after.png "ANSI in Terminal After Processing"
+
+## INSTALLATION
+
+To build:
+
+1. Install the latest Go compiler from https://golang.org/dl/
+2. Install the program:
+
+```sh
+go install github.com/BourgeoisBear/ansiart2utf8/ansiart2utf8@latest
+```
+
+## USAGE
+
 ```sh
 
 ansiart2utf8
@@ -27,25 +49,7 @@ OPTIONS
 
 ```
 
-## BEFORE
-![Before ansiart2utf8 processing][imgBefore]
-
-## AFTER
-![After ansiart2utf8 processing][imgAfter]
-
-[imgBefore]: docs/before.png "ANSI in Terminal Before Processing"
-[imgAfter]: docs/after.png "ANSI in Terminal After Processing"
-
-## Notes
-
-To build:
-
-1. Install the latest Go compiler from https://golang.org/dl/
-2. Install the program: 
-
-```sh
-go install github.com/BourgeoisBear/ansiart2utf8/ansiart2utf8@latest
-```
+## NOTES
 
 **To see the result, make sure that your terminal font provides glyphs for the old CP437 box drawing characters.**<br/>Here are a few fonts that will do:
 
