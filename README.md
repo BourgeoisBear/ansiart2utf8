@@ -6,10 +6,10 @@ Escape codes and line endings are processed for terminal friendliness.
 ```sh
 
 ansiart2utf8
-        Converts ANSI art to UTF-8 encoding, expands cursor forward ESC sequences
-        into spaces, wraps/resets at a specified line width, sends result to STDOUT.
+  Converts ANSI art to UTF-8 encoding, expands cursor forward ESC sequences
+  into spaces, wraps/resets at a specified line width, sends result to STDOUT.
 
-        Leave the [FILE] parameter empty to read from STDIN.
+  Leave the [FILE] parameter empty to read from STDIN.
 
 USAGE: ansiart2utf8 [OPTION]... [FILE]...
 
