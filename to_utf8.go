@@ -36,12 +36,12 @@ const (
 type DebugFunc func(...interface{}) (int, error)
 
 type UTF8Marshaller struct {
-	Width    uint
-	MaxBytes uint
-	Xfrm4bit bool
-	FakeEsc  bool
-	Debug    DebugFunc
-	Writer   io.Writer
+	Width              uint
+	MaxBytes           uint
+	Translate2Xterm256 bool
+	FakeEsc            bool
+	Debug              DebugFunc
+	Writer             io.Writer
 }
 
 /*
@@ -88,7 +88,8 @@ CharLoop:
 
 	for true {
 
-		// TODO: read rune at a time
+		// TODO: try to extract dims from sauce
+
 		chr, e := pRdr.ReadByte()
 
 		if e == io.EOF {
@@ -98,8 +99,6 @@ CharLoop:
 			return
 		}
 		ixByte += 1
-
-		// TODO: verify continuation of SGR code for unpainted chars / across newlines
 
 		switch chr {
 
@@ -131,28 +130,10 @@ CharLoop:
 			// HANDLE ESCAPE CODE SEQUENCE
 		} else if bEsc {
 
-			// NOPS
-
-			/*
-				UNHANDLED CODE:   ESCc;
-				INVALID CODE:     ESC[MF;
-				INVALID CODE:     ESC[m;
-				INVALID CODE:     ESC[P;
-				UNHANDLED CODE:   ESC[@K; [1]
-				INVALID CODE:     ESC[@l;
-				INVALID CODE:     ESC[@S;
-				INVALID CODE:     ESC[@N;
-				INVALID CODE:     ESC[@u;
-				INVALID CODE:     ESC[@s;
-				INVALID CODE:     ESC[Mo3egc;
-			*/
-			// TODO: ESC[?7h; - possibly "wrap" mode
-
 			// ESCAPE CODE TERMINATING CHARS:
 			if strings.IndexByte(SGR_TERMINATORS, chr) == -1 {
 
 				// APPEND COMPONENT OF ESCAPE SEQUENCE
-				// TODO: filter non-alphanumerics, & appropriate punctuation
 				escCur.Params += string(chr)
 
 			} else {
@@ -161,7 +142,6 @@ CharLoop:
 
 				bEsc = false
 				escCur.Code = rune(chr)
-				// fmt.Println(escCur.Params + string(escCur.Code))
 
 				if escCur.Validate() {
 
@@ -198,7 +178,6 @@ CharLoop:
 
 					// NOTE: NOT ANSI.SYS
 					case 'E', 'F', 'G':
-						// TODO:
 						// E: beginning on line, n lines down
 						// F: beginning on line, n lines up
 						// G: cursor to column n
@@ -206,7 +185,6 @@ CharLoop:
 					// TO X,Y
 					case 'H', 'f':
 
-						// TODO: verify distinction between CUP [H] & HVP [f]
 						posCur.Y = int(escCur.SubParams[0])
 						posCur.X = int(escCur.SubParams[1])
 						pGrid.Touch(posCur.Y)
@@ -252,7 +230,6 @@ CharLoop:
 
 					// NO-OP: NOT ANSI.SYS
 					case 'S', 'T':
-						// TODO:
 						// S: scroll page up by n lines
 						// T: scroll page down by n lines
 
@@ -294,6 +271,6 @@ CharLoop:
 		}
 	}
 
-	pGrid.Print(M.Writer, int(M.MaxBytes), M.Debug != nil, M.FakeEsc)
+	pGrid.Print(M.Writer, int(M.MaxBytes), M.Debug != nil, M.Translate2Xterm256, M.FakeEsc)
 	return
 }

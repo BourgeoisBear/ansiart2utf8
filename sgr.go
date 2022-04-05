@@ -58,9 +58,8 @@ func IaEqual(A, B []int) bool {
 	return true
 }
 
-func (pS *SGR) ToEsc(pPrev *SGR, bAsDiff, bFakeEscape bool) string {
+func (pS *SGR) ToEsc(pPrev *SGR, bAsDiff, bXterm256, bFakeEscape bool) string {
 
-	// TODO: brighten bold colors?
 	sParts := []int{}
 
 	bsIter := []struct {
@@ -103,22 +102,22 @@ func (pS *SGR) ToEsc(pPrev *SGR, bAsDiff, bFakeEscape bool) string {
 	}
 
 	// APPEND ANSI CODES FOR FG/BG COLORS
-	mColor := map[int]int{
-		CIX_FG: DEFAULT_FG,
-		CIX_BG: DEFAULT_BG,
-	}
-
 	for CIX := range []int{CIX_FG, CIX_BG} {
 
-		if bAsDiff && IaEqual(pS.Color[CIX], pPrev.Color[CIX]) {
-			continue
+		// NOTE: NEEDS TO PRE-NORMALIZE CELL COLOR TO CORRECTLY TRACK DIFFERENCES
+		//       (i.e. interplay of bold brightening the color & xterm256 translation)
+		sClr := pS.GetColor(CIX, bXterm256)
+
+		if bAsDiff {
+
+			sClrPrev := pPrev.GetColor(CIX, bXterm256)
+
+			if IaEqual(sClr, sClrPrev) {
+				continue
+			}
 		}
 
-		if len(pS.Color[CIX]) == 0 {
-			sParts = append(sParts, mColor[CIX])
-		} else {
-			sParts = append(sParts, pS.Color[CIX]...)
-		}
+		sParts = append(sParts, sClr...)
 	}
 
 	// EARLY EXIT
@@ -137,6 +136,29 @@ func (pS *SGR) ToEsc(pPrev *SGR, bAsDiff, bFakeEscape bool) string {
 		sStr[ix] = strconv.FormatInt(int64(sParts[ix]), 10)
 	}
 	return pfx + strings.Join(sStr, ";") + "m"
+}
+
+func (pS *SGR) GetColor(CIX int, bXterm256 bool) (RET []int) {
+
+	mDefaultClr := map[int]int{
+		CIX_FG: DEFAULT_FG,
+		CIX_BG: DEFAULT_BG,
+	}
+
+	if CIX < len(pS.Color) {
+
+		if len(pS.Color[CIX]) == 0 {
+			RET = []int{mDefaultClr[CIX]}
+		} else {
+			RET = pS.Color[CIX]
+		}
+
+		if bXterm256 {
+			RET = TranslateColors(RET, (pS.Flags&SGR_BOLD) != 0)
+		}
+	}
+
+	return
 }
 
 /*
@@ -181,11 +203,11 @@ func (pS *SGR) MergeCodes(biCodes []int) error {
 
 		// DEFAULT FG
 		case 39:
-			pS.Color[CIX_FG] = []int{DEFAULT_FG}
+			pS.Color[CIX_FG] = []int{}
 
 		// DEFAULT BG
 		case 49:
-			pS.Color[CIX_BG] = []int{DEFAULT_BG}
+			pS.Color[CIX_BG] = []int{}
 
 		// HIGH COLOR FG
 		// HIGH COLOR BG
@@ -221,12 +243,12 @@ func (pS *SGR) MergeCodes(biCodes []int) error {
 					pS.Fclr(oA.Flags)
 				}
 
-			} else if isBtween(biCodes[i], 30, 37) || isBtween(biCodes[i], 90, 97) {
+			} else if IsBtween(biCodes[i], 30, 37) || IsBtween(biCodes[i], 90, 97) {
 
 				// CLASSIC FG
 				pS.Color[CIX_FG] = []int{biCodes[i]}
 
-			} else if isBtween(biCodes[i], 40, 47) || isBtween(biCodes[i], 100, 107) {
+			} else if IsBtween(biCodes[i], 40, 47) || IsBtween(biCodes[i], 100, 107) {
 
 				// CLASSIC BG
 				pS.Color[CIX_BG] = []int{biCodes[i]}
@@ -241,7 +263,7 @@ func (pS *SGR) MergeCodes(biCodes []int) error {
 	return nil
 }
 
-func isBtween(v, lo, hi int) bool {
+func IsBtween(v, lo, hi int) bool {
 	return (v >= lo) && (v <= hi)
 }
 

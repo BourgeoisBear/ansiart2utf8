@@ -16,10 +16,11 @@ func TestToUTF8(t *testing.T) {
 	pWriter := bufio.NewWriter(os.Stdout)
 
 	UM := UTF8Marshaller{
-		Width:    80,
-		MaxBytes: 0,
-		Writer:   pWriter,
-		FakeEsc:  false,
+		Width:              80,
+		MaxBytes:           0,
+		Writer:             pWriter,
+		Translate2Xterm256: true,
+		FakeEsc:            false,
 	}
 
 	// DEBUG LOGGING
@@ -42,11 +43,7 @@ func TestToUTF8(t *testing.T) {
 
 		/*
 
-			TODO:
-				- 256 color replacements option
-					(to override custom terminal colors)
-
-			PROBLEMS:
+			TODO: PROBLEMS
 
 			textfiles/holiday
 				wwans53.ans - missing bottom & bag
@@ -55,8 +52,8 @@ func TestToUTF8(t *testing.T) {
 
 		*/
 
-		if FI.Name() != "ti-nex7.ans" {
-			//continue
+		if FI.Name() != "fruit.ans" {
+			// continue
 		}
 
 		szFile := TEST_DIR + "/" + FI.Name()
@@ -70,8 +67,6 @@ func TestToUTF8(t *testing.T) {
 
 		pWriter.WriteByte(CHR_LF)
 		pWriter.Flush()
-
-		// TODO: reset SGR for errors
 	}
 }
 

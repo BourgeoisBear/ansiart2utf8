@@ -8,17 +8,13 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"strings"
 
 	ansi "github.com/BourgeoisBear/ansiart2utf8"
 )
 
 func main() {
 
-	var (
-		oErr  error
-		pFile *os.File = nil
-	)
+	var oErr error
 
 	// ERROR LOGGING
 	pLogErr := log.New(os.Stderr, "", log.Lshortfile)
@@ -27,6 +23,7 @@ func main() {
 		if oErr != nil {
 
 			pLogErr.Output(2, oErr.Error())
+			fmt.Fprint(os.Stdout, "\x1b[0m")
 			os.Exit(1)
 		}
 	}()
@@ -38,7 +35,9 @@ ansiart2utf8
 	Converts ANSI art to UTF-8 encoding, expands cursor forward ESC sequences
 	into spaces, wraps/resets at a specified line width, sends result to STDOUT.
 
-USAGE: ansiart2utf8 [OPTION]...
+	Leave the [FILE] parameter empty to read from STDIN.
+
+USAGE: ansiart2utf8 [OPTION]... [FILE]...
 
 OPTIONS
 `
@@ -51,11 +50,14 @@ OPTIONS
 		fmt.Fprint(os.Stdout, "\n")
 	}
 
+	UM := ansi.UTF8Marshaller{}
+
 	// COMMAND PARAMETERS
-	pszInput := flag.String("f", "-", "INPUT FILENAME, OR \"-\" FOR STDIN")
-	pbDebug := flag.Bool("d", false, "DEBUG MODE: LINE NUMBERING + PIPE @ \\n")
-	puiWidth := flag.Uint("w", 80, "LINE WIDTH")
-	pnRowBytes := flag.Uint("bytes", 0, "MAXIMUM OUTPUT BYTES PER-ROW (0 = NO LIMIT)")
+	pbDebug := flag.Bool("debug", false, `DEBUG MODE: line numbering + pipe @ \n`)
+	flag.BoolVar(&UM.Translate2Xterm256, "x", false, "ANSI TO XTERM-256 COLOR SUBSTITUTION\n  (to overcome strange terminal color scheme palettes)")
+
+	flag.UintVar(&UM.Width, "w", 80, "LINE WRAP WIDTH")
+	flag.UintVar(&UM.MaxBytes, "bytes", 0, "MAXIMUM OUTPUT BYTES PER-ROW (0 = NO LIMIT)")
 
 	flag.Parse()
 
@@ -65,7 +67,7 @@ OPTIONS
 		return
 	}
 
-	if *puiWidth < 1 {
+	if UM.Width < 1 {
 
 		oErr = errors.New("LINE WIDTH must be > 0")
 		return
@@ -81,40 +83,49 @@ OPTIONS
 		return 0, nil
 	}
 
-	// GET FILE HANDLE
-	if strings.Compare(*pszInput, "-") == 0 {
-
-		pFile = os.Stdin
-
-	} else {
-
-		if pFile, oErr = os.Open(*pszInput); oErr != nil {
-			return
-		}
-		defer pFile.Close()
-
-		fnDebug("FILE: ", *pszInput)
-	}
-
 	// BUFFER OUTPUT
 	pWriter := bufio.NewWriter(os.Stdout)
-
-	UM := ansi.UTF8Marshaller{
-		Width:    *puiWidth,
-		MaxBytes: *pnRowBytes,
-		Writer:   pWriter,
-	}
+	UM.Writer = pWriter
 
 	if *pbDebug {
 		UM.Debug = fnDebug
 	}
 
-	if oErr = UM.Encode(pFile); oErr != nil {
-		return
+	// PROCESS INPUT FILES
+	arFiles := flag.Args()
+	if len(arFiles) == 0 {
+		arFiles = append(arFiles, "-")
 	}
 
-	pWriter.WriteByte(ansi.CHR_LF)
-	pWriter.Flush()
+	for _, szFname := range arFiles {
+
+		if szFname == "-" {
+
+			fnDebug("PROCESSING STDIN")
+			oErr = UM.Encode(os.Stdin)
+			if oErr != nil {
+				return
+			}
+
+		} else {
+
+			pF, oE2 := os.Open(szFname)
+			if oE2 != nil {
+				oErr = fmt.Errorf("UNABLE TO OPEN %s: %s", szFname, oE2.Error())
+				return
+			}
+
+			fnDebug("PROCESSING ", szFname)
+			oErr = UM.Encode(pF)
+			pF.Close()
+			if oErr != nil {
+				return
+			}
+		}
+
+		pWriter.WriteByte(ansi.CHR_LF)
+		pWriter.Flush()
+	}
 
 	os.Exit(0)
 }

@@ -6,54 +6,6 @@ import (
 	"strings"
 )
 
-/*
-
-	NOTE: 1-BASED INDEXING
-
-	ESC[#h   set mode
-	ESC[#l   reset mode
-
-	Esc[Code;String;...p  set keyboard strings
-
-NO EFFECT IF ALREADY AT "EDGE" OF SCREEN:
-	ESC[#A         moves cursor up # lines
-	ESC[#B         moves cursor down # lines
-	ESC[#C         moves cursor right # spaces
-	ESC[#D         moves cursor left # spaces
-
-IGNORED SINCE NOT IN ANSI.SYS:
-	ESC[#E         moves cursor to beginning of line #-lines down
-	ESC[#F         moves cursor to beginning of line #-lines up
-	ESC[#G         moves cursor to column #
-	ESC[#S         scroll whole page up by # (default 1) lines.
-							New lines are added at the bottom.
-	ESC[#T         scroll whole page down by # (default 1) lines.
-							New lines are added at the top.
-
-POSITION:
-	ESC[n;mH       moves cursor to row n, column n (default 1 for omitteds)
-	ESC[n;mf       moves cursor to row n, column n (default 1 for omitteds)
-
-CLEAR:
-	ESC[J          clear from cursor to end of screen
-	ESC[0J         "
-	ESC[1J         clear from cursor to beginning of screen
-	ESC[2J         clear screen and home cursor
-	ESC[3J         clear screen + scrollback buffer, and home cursor [probly subst w/ 2J]
-	ESC[K          clear to end of line
-	ESC[0K         "
-	ESC[1K         clear to beginning of line
-	ESC[2K         clear entire line
-
-SAVE/RESTORE:
-	ESC[s          save cursor position for recall later
-	ESC[u          Return to saved cursor position
-
-SGR:
-	ESC[(params)m
-
-*/
-
 // https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
 const SGR_TERMINATORS = "cfhlmsuABCDEFGHJKNOPSTX\\]^_"
 
@@ -122,17 +74,21 @@ func CSI_Params(pC *EscCode) bool {
 
 	// CONVERT TO INT LIST
 	arPrm := strings.Split(szParams[1:], ";")
-	intPrm := make([]int, len(arPrm))
-	for ix := range arPrm {
-		var e error
-		if intPrm[ix], e = strconv.Atoi(arPrm[ix]); e != nil {
-			intPrm[ix] = -1
+	intPrm := make([]int, 0, len(arPrm))
+	for _, szCode := range arPrm {
+
+		if n, e := strconv.Atoi(szCode); (e == nil) && (n >= 0) {
+			intPrm = append(intPrm, n)
+		} else {
+			// -1 PLACEHOLDER FOR BLANK/INVALID PARAMS
+			intPrm = append(intPrm, -1)
 		}
 	}
 
 	if strings.IndexRune("su", pC.Code) != -1 {
 
 		// NO PARAMS
+		pC.SubParams = []int{}
 
 		return true
 
@@ -141,11 +97,12 @@ func CSI_Params(pC *EscCode) bool {
 		// ONE PARAM - MOTION
 
 		// DEFAULT
-		nVal := 1
 		if len(intPrm) > 0 && intPrm[0] > 1 {
-			nVal = intPrm[0]
+			pC.SubParams = []int{intPrm[0]}
+		} else {
+			pC.SubParams = []int{1}
 		}
-		pC.SubParams = []int{nVal}
+
 		return true
 
 	} else if strings.IndexRune("JK", pC.Code) != -1 {
@@ -153,12 +110,12 @@ func CSI_Params(pC *EscCode) bool {
 		// ONE PARAM - ERASE DISPLAY/LINE
 
 		// DEFAULT
-		nVal := 0
-
-		if len(intPrm) > 0 && intPrm[0] > 0 {
-			nVal = intPrm[0]
+		if len(intPrm) > 0 && IsBtween(intPrm[0], 0, 2) {
+			pC.SubParams = []int{intPrm[0]}
+		} else {
+			pC.SubParams = []int{0}
 		}
-		pC.SubParams = []int{nVal}
+
 		return true
 
 	} else if strings.IndexRune("Hf", pC.Code) != -1 {
@@ -223,8 +180,6 @@ func VF_SGR(pC *EscCode) bool {
 		pC.SubParams = append(pC.SubParams, nVal)
 	}
 
-	// TODO: uncomment
-	// pC.SubParams = TranslateColors(pC.SubParams)
 	return true
 }
 

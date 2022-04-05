@@ -4,16 +4,25 @@ Processes legacy BBS-style ANSI art (ACiDDraw, PabloDraw, etc.) to UTF-8.<br/>
 Escape codes and line endings are processed for terminal friendliness.
 
 ```sh
-USAGE: ansiart2utf8 [OPTION]...
+
+ansiart2utf8
+        Converts ANSI art to UTF-8 encoding, expands cursor forward ESC sequences
+        into spaces, wraps/resets at a specified line width, sends result to STDOUT.
+
+        Leave the [FILE] parameter empty to read from STDIN.
+
+USAGE: ansiart2utf8 [OPTION]... [FILE]...
 
 OPTIONS
   -bytes uint
-    	MAXIMUM OUTPUT BYTES PER-ROW (0 = NO LIMIT)
-  -d	DEBUG MODE: LINE NUMBERING + PIPE @ \n
-  -f string
-    	INPUT FILENAME, OR "-" FOR STDIN (default "-")
+        MAXIMUM OUTPUT BYTES PER-ROW (0 = NO LIMIT)
+  -debug
+        DEBUG MODE: line numbering + pipe @ \n
   -w uint
-    	LINE WIDTH (default 80)
+        LINE WRAP WIDTH (default 80)
+  -x    ANSI TO XTERM-256 COLOR SUBSTITUTION
+          (to overcome strange terminal color scheme palettes)
+
 ```
 
 ## BEFORE

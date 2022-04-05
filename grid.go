@@ -243,11 +243,8 @@ func (gr *Grid) Put(pos GridPos, rChar rune, sgrCodes SGR) error {
 	}
 
 	ixCol, ixLine := pos.Denorm()
-	if gr.width > 0 {
-
-		if ixCol >= int(gr.width) {
-			return fmt.Errorf("POSITION %d, %d EXCEEDS COLUMN WIDTH %d", pos.X, pos.Y, gr.width)
-		}
+	if ixCol >= int(gr.width) {
+		return fmt.Errorf("POSITION %d, %d EXCEEDS COLUMN WIDTH %d", pos.X, pos.Y, gr.width)
 	}
 
 	// ALLOCATE GRID UP TO CURRENT POSITION
@@ -266,7 +263,7 @@ func (gr *Grid) Put(pos GridPos, rChar rune, sgrCodes SGR) error {
 	return nil
 }
 
-func (gr *Grid) Print(iWri io.Writer, nRowBytes int, bDebug, bFakeEsc bool) {
+func (gr *Grid) Print(iWri io.Writer, nRowBytes int, bDebug, bXterm256, bFakeEsc bool) {
 
 	/*
 		NOTE: CAN'T ESC[nC COMPRESS BECAUSE OF TERMINAL BACKGROUND COLOR
@@ -306,7 +303,7 @@ func (gr *Grid) Print(iWri io.Writer, nRowBytes int, bDebug, bFakeEsc bool) {
 
 			// WRITE SGR CODE ON CHANGE
 			// ALWAYS WRITE FOR NEW ROW (FOR BG/FG COLOR OVERRIDE)
-			if escTemp := cell.Brush.ToEsc(&brushPrev, ix_cell > 0, bFakeEsc); len(escTemp) > 0 {
+			if escTemp := cell.Brush.ToEsc(&brushPrev, ix_cell > 0, bXterm256, bFakeEsc); len(escTemp) > 0 {
 				if fnWrite(escTemp) {
 					break
 				}

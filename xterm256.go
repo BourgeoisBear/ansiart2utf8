@@ -27,31 +27,14 @@ var OrigLight = []OC{
 	OC{Hex: `#FFFFFF`, Xterm256: 15},
 }
 
-// NOTE: SGR sets pen, but cell not touched until painted
-// TODO: make conditional
-func TranslateColors(sSGR []int) []int {
-
-	//return sSGR
-
-	bIntense := false
-	for _, val := range sSGR {
-
-		switch val {
-
-		case 1:
-			bIntense = true
-
-		case 0, 2, 22:
-			bIntense = false
-		}
-	}
+func TranslateColors(sSGR []int, bIntense bool) []int {
 
 	sRet := make([]int, 0, len(sSGR))
 
 	for _, v := range sSGR {
 
 		// FOREGROUND COLORS
-		if (v >= 30) && (v <= 37) {
+		if IsBtween(v, 30, 37) {
 
 			if bIntense {
 				sRet = append(sRet, 38, 5, OrigLight[v-30].Xterm256)
@@ -61,18 +44,18 @@ func TranslateColors(sSGR []int) []int {
 			continue
 		}
 
-		if (v >= 90) && (v <= 97) {
+		if IsBtween(v, 90, 97) {
 			sRet = append(sRet, 38, 5, OrigLight[v-90].Xterm256)
 			continue
 		}
 
 		// BACKGROUND COLORS
-		if (v >= 40) && (v <= 47) {
+		if IsBtween(v, 40, 47) {
 			sRet = append(sRet, 48, 5, OrigDark[v-40].Xterm256)
 			continue
 		}
 
-		if (v >= 100) && (v <= 107) {
+		if IsBtween(v, 100, 107) {
 			sRet = append(sRet, 48, 5, OrigLight[v-100].Xterm256)
 			continue
 		}
