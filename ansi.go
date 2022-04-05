@@ -63,12 +63,6 @@ type EscCode struct {
 	SubParams []int
 }
 
-// ORIGINAL COLORS
-type OC struct {
-	Hex      string
-	Xterm256 int
-}
-
 type ValidateFunc func(pCode *EscCode) bool
 
 var (

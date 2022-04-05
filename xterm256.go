@@ -1,5 +1,10 @@
 package ansiart2utf8
 
+type OC struct {
+	Hex      string
+	Xterm256 int
+}
+
 var OrigDark = []OC{
 	OC{Hex: `#000000`, Xterm256: 16},
 	OC{Hex: `#AB0000`, Xterm256: 124},
@@ -22,12 +27,8 @@ var OrigLight = []OC{
 	OC{Hex: `#FFFFFF`, Xterm256: 15},
 }
 
-// TODO: what does overwrite do?
-// (set color at start, put char at end, move to start, change color)
 // NOTE: SGR sets pen, but cell not touched until painted
 // TODO: make conditional
-// TODO: color striping issues
-// TODO: always treat bold as bright color
 func TranslateColors(sSGR []int) []int {
 
 	//return sSGR
