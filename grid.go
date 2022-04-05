@@ -37,10 +37,17 @@ type GridCell struct {
 
 func (gc *GridCell) ClearCell() {
 	gc.Char = 0
-	gc.Brush.Reset()
+	gc.Brush = SGR{}
 }
 
 type GridRow []GridCell
+
+func (R GridRow) ClearRow() {
+
+	for ix := range R {
+		R[ix].ClearCell()
+	}
+}
 
 type Grid struct {
 	width uint
@@ -209,21 +216,23 @@ func (gr *Grid) Touch(nHeight int) {
 
 	oldHeight := gr.Height()
 
-	if nHeight > oldHeight {
-
-		// ENHEIGHTEN
-		sGrid := make([]GridRow, nHeight)
-		if oldHeight > 0 {
-			copy(sGrid, gr.grid)
-		}
-
-		// ADD NEW ROWS
-		for i := oldHeight; i < nHeight; i++ {
-			sGrid[i] = make([]GridCell, gr.width)
-		}
-
-		gr.grid = sGrid
+	if nHeight <= oldHeight {
+		return
 	}
+
+	// ENHEIGHTEN
+	sGrid := make([]GridRow, nHeight)
+	if oldHeight > 0 {
+		copy(sGrid, gr.grid)
+	}
+
+	// ADD NEW ROWS
+	for i := oldHeight; i < nHeight; i++ {
+		sGrid[i] = make(GridRow, gr.width)
+		sGrid[i].ClearRow()
+	}
+
+	gr.grid = sGrid
 }
 
 func (gr *Grid) Put(pos GridPos, rChar rune, sgrCodes SGR) error {
@@ -257,7 +266,7 @@ func (gr *Grid) Put(pos GridPos, rChar rune, sgrCodes SGR) error {
 	return nil
 }
 
-func (gr *Grid) Print(iWri io.Writer, nRowBytes int, bDebug bool) {
+func (gr *Grid) Print(iWri io.Writer, nRowBytes int, bDebug, bFakeEsc bool) {
 
 	/*
 		NOTE: CAN'T ESC[nC COMPRESS BECAUSE OF TERMINAL BACKGROUND COLOR
@@ -266,7 +275,6 @@ func (gr *Grid) Print(iWri io.Writer, nRowBytes int, bDebug bool) {
 	const STR_CLEAR = "\x1b[0m"
 
 	var nBytes int
-	var brushPrev SGR
 
 	fnWrite := func(str string) bool {
 
@@ -292,30 +300,19 @@ func (gr *Grid) Print(iWri io.Writer, nRowBytes int, bDebug bool) {
 			fnWrite(lineNum)
 		}
 
-		// TODO: differential encoding of SGRs
-		// TODO: optional toggle of ESC reporting
-		// RESTORE BRUSH FROM PREVIOUS LINE
-		bFakeEsc := false
-		if szTemp := brushPrev.ToEsc(bFakeEsc); fnWrite(szTemp) {
-			break
-		}
+		// RENDER CELLS IN ROW
+		brushPrev := SGR{}
+		for ix_cell, cell := range sRow {
 
-		for _, cell := range sRow {
-
-			// TODO: start with B&W for empty color
-			// TODO: IsEqual change for blank fg/bg
-
-			// WRITE ESC CODE ON CHANGE
-			if !cell.Brush.IsEqual(&brushPrev) {
-
-				if szTemp := cell.Brush.ToEsc(bFakeEsc); fnWrite(szTemp) {
+			// WRITE SGR CODE ON CHANGE
+			// ALWAYS WRITE FOR NEW ROW (FOR BG/FG COLOR OVERRIDE)
+			if escTemp := cell.Brush.ToEsc(&brushPrev, ix_cell > 0, bFakeEsc); len(escTemp) > 0 {
+				if fnWrite(escTemp) {
 					break
 				}
-
-				// TODO: color continuation into `brushPrev` for empty colors
-				// i.e. merge into
-				brushPrev = cell.Brush
 			}
+
+			brushPrev = cell.Brush
 
 			// DEFAULT PAINT CHAR
 			if cell.Char == 0 {

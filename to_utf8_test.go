@@ -19,6 +19,7 @@ func TestToUTF8(t *testing.T) {
 		Width:    80,
 		MaxBytes: 0,
 		Writer:   pWriter,
+		FakeEsc:  false,
 	}
 
 	// DEBUG LOGGING
@@ -42,16 +43,10 @@ func TestToUTF8(t *testing.T) {
 		/*
 
 			TODO:
-				- SGR delta encoding
-					- determine behavior of unwritten cells
-						(i.e. inherit SGR vs B&W)
 				- 256 color replacements option
 					(to override custom terminal colors)
 
 			PROBLEMS:
-
-			textfiles/artwork
-				ufo.ans - missing top
 
 			textfiles/holiday
 				wwans53.ans - missing bottom & bag
@@ -60,7 +55,7 @@ func TestToUTF8(t *testing.T) {
 
 		*/
 
-		if FI.Name() != "thanks3.ans" {
+		if FI.Name() != "ti-nex7.ans" {
 			//continue
 		}
 

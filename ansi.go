@@ -63,6 +63,12 @@ type EscCode struct {
 	SubParams []int
 }
 
+// ORIGINAL COLORS
+type OC struct {
+	Hex      string
+	Xterm256 int
+}
+
 type ValidateFunc func(pCode *EscCode) bool
 
 var (
@@ -185,6 +191,13 @@ func CSI_Params(pC *EscCode) bool {
 	return false
 }
 
+/*
+	H: extends selection
+	on jump:
+		- colors only apply to written areas, rest remain W on B
+		- motions do not count as 'written'
+
+*/
 func VF_SGR(pC *EscCode) bool {
 
 	szParams := strings.TrimSpace(pC.Params)
@@ -201,12 +214,12 @@ func VF_SGR(pC *EscCode) bool {
 	}
 
 	// SPLIT AT ';'
-	pTmp := strings.Split(szParams[1:], ";")
+	sPrm := strings.Split(szParams[1:], ";")
 
 	pC.SubParams = []int{}
 
 	// CONVERT TO INT AND APPEND TO PARAMS
-	for _, v := range pTmp {
+	for _, v := range sPrm {
 
 		nVal, err := strconv.Atoi(v)
 		if (err != nil) || (nVal < 0) || (nVal > 255) {
@@ -216,6 +229,8 @@ func VF_SGR(pC *EscCode) bool {
 		pC.SubParams = append(pC.SubParams, nVal)
 	}
 
+	// TODO: uncomment
+	// pC.SubParams = TranslateColors(pC.SubParams)
 	return true
 }
 

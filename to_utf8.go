@@ -38,6 +38,8 @@ type DebugFunc func(...interface{}) (int, error)
 type UTF8Marshaller struct {
 	Width    uint
 	MaxBytes uint
+	Xfrm4bit bool
+	FakeEsc  bool
 	Debug    DebugFunc
 	Writer   io.Writer
 }
@@ -284,14 +286,6 @@ CharLoop:
 		// HANDLE WRITABLE CHARACTERS OUTSIDE OF ESCAPE MODE
 		if !bEsc {
 
-			if false {
-				if posCur.Y > 3 {
-					return
-				}
-
-				fmt.Printf("%x -> %x | %#v\n", chr, Array437[chr], posCur)
-			}
-
 			if e2 := pGrid.Put(posCur, Array437[chr], sgrCur); e2 != nil {
 				fnDebug(e2)
 			}
@@ -300,6 +294,6 @@ CharLoop:
 		}
 	}
 
-	pGrid.Print(M.Writer, int(M.MaxBytes), M.Debug != nil)
+	pGrid.Print(M.Writer, int(M.MaxBytes), M.Debug != nil, M.FakeEsc)
 	return
 }

@@ -2,6 +2,7 @@ package ansiart2utf8
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -17,15 +18,21 @@ const (
 	SGR_STRIKETHROUGH
 )
 
+const (
+	CIX_FG = iota
+	CIX_BG
+	CIX_MAX
+)
+
+const (
+	DEFAULT_FG int = 37
+	DEFAULT_BG int = 40
+)
+
 type SGR struct {
 	// Bold, Faint, Italic, Underline, Blink, Inverse, Conceal, Strikethrough bool
-	Flags    uint32
-	ColorTxt string
-	ColorBg  string
-}
-
-func (pS *SGR) Reset() {
-	*pS = SGR{}
+	Flags uint32
+	Color [CIX_MAX][]int
 }
 
 func (pS *SGR) Fset(f uint32) {
@@ -36,58 +43,95 @@ func (pS *SGR) Fclr(f uint32) {
 	pS.Flags &^= f
 }
 
-func (pS *SGR) IsEqual(pCodePrev *SGR) bool {
+func IaEqual(A, B []int) bool {
 
-	return ((pS.Flags == pCodePrev.Flags) &&
-		(pS.ColorTxt == pCodePrev.ColorTxt) &&
-		(pS.ColorBg == pCodePrev.ColorBg))
+	if len(A) != len(B) {
+		return false
+	}
+
+	for ix := range A {
+		if A[ix] != B[ix] {
+			return false
+		}
+	}
+
+	return true
 }
 
-func (pS *SGR) ToEsc(bFakeEscape bool) string {
+func (pS *SGR) ToEsc(pPrev *SGR, bAsDiff, bFakeEscape bool) string {
 
-	bsParts := []string{"0"}
+	// TODO: brighten bold colors?
+	sParts := []int{}
 
 	bsIter := []struct {
-		Flag uint32
-		Set  string
+		Flag  uint32
+		Set   int
+		Clear int
 	}{
-		{SGR_BOLD, "1"},
-		{SGR_FAINT, "2"},
-		{SGR_ITALIC, "3"},
-		{SGR_UNDERLINE, "4"},
-		{SGR_BLNK_SLOW, "5"},
-		{SGR_BLNK_FAST, "6"},
-		{SGR_INVERSE, "7"},
-		{SGR_CONCEAL, "8"},
-		{SGR_STRIKETHROUGH, "9"},
+		{SGR_BOLD, 1, 22},
+		{SGR_FAINT, 2, 22},
+		{SGR_ITALIC, 3, 23},
+		{SGR_UNDERLINE, 4, 24},
+		{SGR_BLNK_SLOW, 5, 25},
+		{SGR_BLNK_FAST, 6, 25},
+		{SGR_INVERSE, 7, 27},
+		{SGR_CONCEAL, 8, 28},
+		{SGR_STRIKETHROUGH, 9, 29},
 	}
 
+	// APPEND ANSI CODES FOR TEXT STYLE
+	flagDiff := pS.Flags ^ pPrev.Flags
 	for _, sITER := range bsIter {
 
+		// CLEAR
+		if bAsDiff && ((sITER.Flag & flagDiff) != 0) {
+			if (sITER.Flag & pS.Flags) != 0 {
+				sParts = append(sParts, sITER.Set)
+			} else {
+				sParts = append(sParts, sITER.Clear)
+			}
+		}
+
 		if (sITER.Flag & pS.Flags) != 0 {
-			bsParts = append(bsParts, sITER.Set)
+			sParts = append(sParts, sITER.Set)
 		}
 	}
 
-	if len(pS.ColorBg) > 0 {
-		bsParts = append(bsParts, pS.ColorBg)
+	// APPEND ANSI CODES FOR FG/BG COLORS
+	mColor := map[int]int{
+		CIX_FG: DEFAULT_FG,
+		CIX_BG: DEFAULT_BG,
 	}
 
-	if len(pS.ColorTxt) > 0 {
-		bsParts = append(bsParts, pS.ColorTxt)
-	}
+	for CIX := range []int{CIX_FG, CIX_BG} {
 
-	if len(bsParts) > 0 {
-
-		pfx := "\x1b["
-		if bFakeEscape {
-			pfx = pfx + "96m^[" + pfx + "0m["
+		if bAsDiff && IaEqual(pS.Color[CIX], pPrev.Color[CIX]) {
+			continue
 		}
 
-		return pfx + strings.Join(bsParts, ";") + "m"
+		if len(pS.Color[CIX]) == 0 {
+			sParts = append(sParts, mColor[CIX])
+		} else {
+			sParts = append(sParts, pS.Color[CIX]...)
+		}
 	}
 
-	return ""
+	// EARLY EXIT
+	if len(sParts) == 0 {
+		return ""
+	}
+
+	// GENERATE ESCAPE CODE
+	pfx := "\x1b["
+	if bFakeEscape {
+		pfx = pfx + "96m^[" + pfx + "0m["
+	}
+
+	sStr := make([]string, len(sParts))
+	for ix := range sParts {
+		sStr[ix] = strconv.FormatInt(int64(sParts[ix]), 10)
+	}
+	return pfx + strings.Join(sStr, ";") + "m"
 }
 
 /*
@@ -128,29 +172,29 @@ func (pS *SGR) MergeCodes(biCodes []int) error {
 
 		// RESET
 		case 0:
-			pS.Reset()
+			*pS = SGR{}
 
 		// DEFAULT FG
 		case 39:
-			pS.ColorTxt = ""
+			pS.Color[CIX_FG] = []int{DEFAULT_FG}
 
 		// DEFAULT BG
 		case 49:
-			pS.ColorBg = ""
+			pS.Color[CIX_BG] = []int{DEFAULT_BG}
 
 		// HIGH COLOR FG
 		// HIGH COLOR BG
 		case 38, 48:
 
-			szColor, nAdvance := HighColor(biCodes[i:])
+			sColor, nAdvance := HighColor(biCodes[i:])
 
 			if nAdvance > 0 {
 
 				switch biCodes[i] {
 				case 38:
-					pS.ColorTxt = szColor
+					pS.Color[CIX_FG] = sColor
 				case 48:
-					pS.ColorBg = szColor
+					pS.Color[CIX_BG] = sColor
 				}
 
 				i += nAdvance
@@ -172,15 +216,15 @@ func (pS *SGR) MergeCodes(biCodes []int) error {
 					pS.Fclr(oA.Flags)
 				}
 
-			} else if (biCodes[i] >= 30) && (biCodes[i] <= 37) {
+			} else if isBtween(biCodes[i], 30, 37) || isBtween(biCodes[i], 90, 97) {
 
 				// CLASSIC FG
-				pS.ColorTxt = fmt.Sprintf("%d", biCodes[i])
+				pS.Color[CIX_FG] = []int{biCodes[i]}
 
-			} else if (biCodes[i] >= 40) && (biCodes[i] <= 47) {
+			} else if isBtween(biCodes[i], 40, 47) || isBtween(biCodes[i], 100, 107) {
 
 				// CLASSIC BG
-				pS.ColorBg = fmt.Sprintf("%d", biCodes[i])
+				pS.Color[CIX_BG] = []int{biCodes[i]}
 
 			} else {
 
@@ -192,10 +236,14 @@ func (pS *SGR) MergeCodes(biCodes []int) error {
 	return nil
 }
 
+func isBtween(v, lo, hi int) bool {
+	return (v >= lo) && (v <= hi)
+}
+
 /*
 	Formats high color SGR codes
 */
-func HighColor(arCodes []int) (string, int) {
+func HighColor(arCodes []int) ([]int, int) {
 
 	nCodes := len(arCodes)
 
@@ -213,7 +261,7 @@ func HighColor(arCodes []int) (string, int) {
 
 			if fnKosher(arCodes[2]) {
 
-				return fmt.Sprintf("%d;%d;%d", arCodes[0], arCodes[1], arCodes[2]), 2
+				return arCodes[0:3], 2
 			}
 
 		// 2;r;g;b where r,g,b are red, green and blue color channels (out of 255)
@@ -223,12 +271,11 @@ func HighColor(arCodes []int) (string, int) {
 
 				if fnKosher(arCodes[2]) && fnKosher(arCodes[3]) && fnKosher(arCodes[4]) {
 
-					return fmt.Sprintf("%d;%d;%d;%d;%d",
-						arCodes[0], arCodes[1], arCodes[2], arCodes[3], arCodes[4]), 4
+					return arCodes[0:5], 4
 				}
 			}
 		}
 	}
 
-	return "", 0
+	return []int{}, 0
 }
