@@ -1,5 +1,7 @@
 # ansiart2utf8
 
+[![GoDoc](https://godoc.org/github.com/BourgeoisBear/ansiart2utf8?status.png)](http://godoc.org/github.com/BourgeoisBear/ansiart2utf8)
+
 Processes legacy BBS-style ANSI art (ACiDDraw, PabloDraw, etc.) to UTF-8.<br/>
 Escape codes and line endings are processed for terminal friendliness.
 
