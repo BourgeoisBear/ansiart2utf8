@@ -99,7 +99,7 @@ OPTIONS
 
 	for _, szFname := range arFiles {
 
-		if szFname == "-" {
+		if (szFname == "-") && (len(arFiles) == 1) {
 
 			fnDebug("PROCESSING STDIN")
 			oErr = UM.Encode(os.Stdin)
