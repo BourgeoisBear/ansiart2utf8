@@ -49,7 +49,9 @@ OPTIONS
 
 ## NOTES
 
-**To see the result, make sure that your terminal font provides glyphs for the old CP437 box drawing characters.**<br/>Here are a few fonts that will do:
+**To see the result, make sure that your terminal font provides glyphs for the old CP437 box drawing characters.**
+
+Here are a few fonts that will do:
 
 - [Consolas](https://en.wikipedia.org/wiki/Consolas)
 - [Courier New](https://www.microsoft.com/typography/fonts/family.aspx?FID=10)
@@ -57,11 +59,11 @@ OPTIONS
 - [Envy Code R](https://damieng.com/blog/2008/05/26/envy-code-r-preview-7-coding-font-released)
 - [Iosevka](https://be5invis.github.io/Iosevka/)
 
-## Seeing Code Page 437 in Vim
+### Seeing Code Page 437 in Vim
 
 `:e ++enc=cp437`
 
-## Resources
+### Resources
 
 - [PabloDraw](http://picoe.ca/products/pablodraw/), an ANSI drawing program for Windows
 - [ACiDDraw](http://www.acid.org/apps/apps.html), an ANSI drawing program for DOS
@@ -73,7 +75,7 @@ OPTIONS
   https://en.wikipedia.org/wiki/ANSI_escape_code<br/>
   https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
 
-## Media
+### Media
 
 - http://artscene.textfiles.com/ansi/
 - https://www.ansilove.org/bbs.html
